@@ -19,6 +19,7 @@ body { background:linear-gradient(135deg,#0f2027,#203a43,#2c5364); min-height:10
 .login-box button { width:100%; padding:13px; border:none; border-radius:10px; background:linear-gradient(90deg,#0288d1,#4fc3f7); color:#0f2027; font-weight:bold; font-size:1em; cursor:pointer; transition:0.2s; }
 .login-box button:hover { transform:translateY(-2px); box-shadow:0 6px 18px rgba(79,195,247,0.4); }
 #loginErro { color:#ef5350; font-size:0.85em; margin-top:10px; min-height:20px; }
+.aviso-local { font-size:0.75em; color:#ffb74d; margin-top:15px; border-top:1px solid rgba(255,255,255,0.1); padding-top:10px; }
 
 /* APP */
 #app { max-width:1200px; margin:0 auto; padding:20px; display:none; }
@@ -109,6 +110,7 @@ footer { text-align:center; color:#78909c; font-size:0.8em; padding:20px 0; }
     <input type="password" id="senhaInput" placeholder="Digite a senha" onkeypress="if(event.key==='Enter')entrar()">
     <button onclick="entrar()">🔓 Entrar</button>
     <div id="loginErro"></div>
+    <div class="aviso-local">⚠️ Os dados são salvos <b>apenas neste navegador</b>.<br>Para transferir, use a aba "Backup / Salvar".</div>
   </div>
 </div>
 
@@ -195,7 +197,7 @@ footer { text-align:center; color:#78909c; font-size:0.8em; padding:20px 0; }
     </div>
   </div>
 
-  <footer>TV Vale na Rede © <span id="ano"></span> — Todos os direitos reservados</footer>
+  <footer>TV Vale na Rede © <span id="ano"></span> — Todos os direitos reservados<br><span style="font-size:0.7em;color:#546e7a;">Dados armazenados localmente no navegador</span></footer>
 </div>
 
 <!-- ===== MODAL DE SERVIÇOS ===== -->
@@ -223,8 +225,22 @@ const MAX_LINHAS_SERV = 30;
 let clientes = [];
 let funcionarios = [];
 let clienteAtualId = null;
+let storageDisponivel = true;
 
 const $ = id => document.getElementById(id);
+
+/* ========= VERIFICAÇÃO DE STORAGE ========= */
+function verificarStorage() {
+  try {
+    const teste = '__tvvn_teste__';
+    localStorage.setItem(teste, '1');
+    localStorage.removeItem(teste);
+    return true;
+  } catch (e) {
+    console.warn('localStorage indisponível:', e);
+    return false;
+  }
+}
 
 /* ========= LOGIN ========= */
 function entrar() {
@@ -242,6 +258,9 @@ function entrar() {
 function mostrarApp() {
   $('loginScreen').style.display = 'none';
   $('app').style.display = 'block';
+  if (!storageDisponivel) {
+    alert('⚠️ Atenção: O armazenamento local (localStorage) não está disponível neste navegador. Os dados não serão salvos entre sessões. Verifique se o modo de navegação anônima está ativado ou se as configurações de cookies estão bloqueando o armazenamento.');
+  }
   carregar();
   renderClientes();
   renderFuncionarios();
@@ -249,20 +268,36 @@ function mostrarApp() {
 
 /* ========= PERSISTÊNCIA ========= */
 function carregar() {
+  if (!storageDisponivel) return;
   try {
     clientes = JSON.parse(localStorage.getItem('tvvn_clientes') || '[]');
     funcionarios = JSON.parse(localStorage.getItem('tvvn_funcionarios') || '[]');
-  } catch(e) { clientes = []; funcionarios = []; }
+  } catch(e) { 
+    console.error('Erro ao carregar dados:', e);
+    clientes = []; 
+    funcionarios = []; 
+  }
 }
 
 function persistir() {
-  localStorage.setItem('tvvn_clientes', JSON.stringify(clientes));
-  localStorage.setItem('tvvn_funcionarios', JSON.stringify(funcionarios));
+  if (!storageDisponivel) {
+    mostrarMsg($('msgBackup'), '❌ Não foi possível salvar: armazenamento local indisponível.', 'err');
+    return;
+  }
+  try {
+    localStorage.setItem('tvvn_clientes', JSON.stringify(clientes));
+    localStorage.setItem('tvvn_funcionarios', JSON.stringify(funcionarios));
+  } catch (e) {
+    console.error('Erro ao salvar:', e);
+    mostrarMsg($('msgBackup'), '❌ Erro ao salvar: o armazenamento local pode estar cheio.', 'err');
+  }
 }
 
 function salvarTudoAgora() {
   persistir();
-  mostrarMsg($('msgBackup'), '✅ Todos os dados foram salvos no navegador!', 'ok');
+  if (storageDisponivel) {
+    mostrarMsg($('msgBackup'), '✅ Todos os dados foram salvos no navegador!', 'ok');
+  }
 }
 
 function mostrarMsg(el, texto, tipo) {
@@ -450,6 +485,10 @@ function excluirFuncionario(id) {
 
 /* ========= BACKUP ========= */
 function exportarDados() {
+  if (clientes.length === 0 && funcionarios.length === 0) {
+    mostrarMsg($('msgBackup'), '⚠️ Não há dados para exportar.', 'err');
+    return;
+  }
   const dados = {
     empresa: 'TV Vale na Rede',
     exportadoEm: new Date().toLocaleString('pt-BR'),
@@ -475,7 +514,7 @@ function importarDados(event) {
       if (!dados.clientes && !dados.funcionarios) throw new Error('Formato inválido');
       const qtdCli = (dados.clientes || []).length;
       const qtdFunc = (dados.funcionarios || []).length;
-      if (!confirm(`Importar backup com ${qtdCli} cliente(s) e ${qtdFunc} funcionário(s)?\n\nIsso SUBSTITUIRÁ os dados atuais.`)) {
+      if (!confirm(`Importar backup com ${qtdCli} cliente(s) e ${qtdFunc} funcionário(s)?\n\nIsso SUBSTITUIRÁ os dados atuais deste navegador.`)) {
         event.target.value = '';
         return;
       }
@@ -501,7 +540,7 @@ function importarDados(event) {
 }
 
 function limparTudo() {
-  if (!confirm('⚠️ ATENÇÃO!\n\nIsso vai APAGAR TODOS os clientes e funcionários cadastrados.\n\nTem certeza?')) return;
+  if (!confirm('⚠️ ATENÇÃO!\n\nIsso vai APAGAR TODOS os clientes e funcionários cadastrados neste navegador.\n\nTem certeza?')) return;
   if (!confirm('Confirma novamente? Esta ação NÃO pode ser desfeita.')) return;
   clientes = [];
   funcionarios = [];
@@ -513,6 +552,7 @@ function limparTudo() {
 
 /* ========= INICIALIZAÇÃO ========= */
 $('ano').textContent = new Date().getFullYear();
+storageDisponivel = verificarStorage();
 if (sessionStorage.getItem('tvvn_logado') === '1') {
   mostrarApp();
 } else {
