@@ -11,7 +11,7 @@ body { background:linear-gradient(135deg,#0f2027,#203a43,#2c5364); min-height:10
 /* LOGIN */
 #loginScreen { position:fixed; inset:0; display:flex; align-items:center; justify-content:center; background:linear-gradient(135deg,#0f2027,#203a43,#2c5364); z-index:1000; padding:20px; }
 .login-box { background:rgba(255,255,255,0.08); border:1px solid rgba(255,255,255,0.2); border-radius:20px; padding:40px 30px; max-width:400px; width:100%; text-align:center; backdrop-filter:blur(12px); box-shadow:0 10px 40px rgba(0,0,0,0.4); }
-.login-box h1 { font-size:1.6em; margin-bottom:8px; }
+.login-box h1 { font-size:1.5em; margin-bottom:8px; letter-spacing:1px; }
 .login-box h1 span { color:#4fc3f7; }
 .login-box p { color:#b0bec5; font-size:0.85em; margin-bottom:25px; }
 .login-box input { width:100%; padding:13px; border-radius:10px; border:1px solid rgba(255,255,255,0.25); background:rgba(0,0,0,0.3); color:#fff; font-size:1em; outline:none; margin-bottom:15px; text-align:center; }
@@ -23,7 +23,7 @@ body { background:linear-gradient(135deg,#0f2027,#203a43,#2c5364); min-height:10
 /* APP */
 #app { max-width:1200px; margin:0 auto; padding:20px; display:none; }
 header { text-align:center; padding:20px; background:rgba(255,255,255,0.07); border-radius:15px; border:1px solid rgba(255,255,255,0.15); margin-bottom:20px; }
-header h1 { font-size:1.8em; }
+header h1 { font-size:1.7em; letter-spacing:1.5px; }
 header h1 span { color:#4fc3f7; }
 header p { color:#cfd8dc; font-size:0.9em; margin-top:5px; }
 
@@ -50,6 +50,8 @@ button.primary:hover { transform:translateY(-2px); box-shadow:0 6px 18px rgba(79
 button.primary:disabled { opacity:0.4; cursor:not-allowed; transform:none; box-shadow:none; }
 button.success { background:linear-gradient(90deg,#2e7d32,#66bb6a); color:#fff; }
 button.danger { background:linear-gradient(90deg,#b71c1c,#ef5350); color:#fff; }
+button.whats { background:linear-gradient(90deg,#128c7e,#25d366); color:#fff; }
+button.exit { background:linear-gradient(90deg,#b71c1c,#ef5350); color:#fff; }
 
 .msg { margin-top:12px; padding:10px; border-radius:8px; font-size:0.85em; display:none; }
 .msg.ok { background:rgba(76,175,80,0.25); border:1px solid #4caf50; display:block; }
@@ -89,11 +91,17 @@ td { color:#e0e0e0; word-break:break-word; }
 
 .info-box { background:rgba(79,195,247,0.1); border:1px solid rgba(79,195,247,0.4); border-radius:10px; padding:15px; margin-top:15px; font-size:0.85em; color:#cfd8dc; line-height:1.7; }
 .info-box b { color:#4fc3f7; }
+.info-box.wa { background:rgba(37,211,102,0.1); border-color:rgba(37,211,102,0.4); }
+.info-box.wa b { color:#25d366; }
+
+.exit-bar { text-align:center; margin:25px 0 15px; }
+.exit-bar button { padding:14px 40px; border:none; border-radius:10px; background:linear-gradient(90deg,#b71c1c,#ef5350); color:#fff; font-weight:bold; font-size:1em; cursor:pointer; transition:0.2s; box-shadow:0 4px 15px rgba(239,83,80,0.3); }
+.exit-bar button:hover { transform:translateY(-2px); box-shadow:0 6px 20px rgba(239,83,80,0.5); }
 
 footer { text-align:center; color:#78909c; font-size:0.8em; padding:20px 0; }
 
 @media (max-width:600px) {
-  header h1 { font-size:1.3em; }
+  header h1 { font-size:1.2em; }
   .modal-content textarea { min-height:320px; }
   .login-box { padding:30px 22px; }
 }
@@ -104,7 +112,7 @@ footer { text-align:center; color:#78909c; font-size:0.8em; padding:20px 0; }
 <!-- ===== TELA DE LOGIN ===== -->
 <div id="loginScreen">
   <div class="login-box">
-    <h1>📺 TV <span>Vale na Rede</span></h1>
+    <h1>📺 <span>TVVALENAREDE</span></h1>
     <p>Sistema de Cadastro — Acesso Restrito</p>
     <input type="password" id="senhaInput" placeholder="Digite a senha" onkeypress="if(event.key==='Enter')entrar()">
     <button onclick="entrar()">🔓 Entrar</button>
@@ -115,14 +123,14 @@ footer { text-align:center; color:#78909c; font-size:0.8em; padding:20px 0; }
 <!-- ===== APLICAÇÃO ===== -->
 <div id="app">
   <header>
-    <h1>📺 TV <span>Vale na Rede</span></h1>
+    <h1>📺 <span>TVVALENAREDE</span></h1>
     <p>Sistema de Cadastro de Clientes e Funcionários</p>
   </header>
 
   <div class="tabs">
     <button class="tab active" onclick="mudarAba('clientes', this)">🏪 Clientes</button>
     <button class="tab" onclick="mudarAba('funcionarios', this)">👤 Funcionários</button>
-    <button class="tab" onclick="mudarAba('backup', this)">💾 Backup / Salvar</button>
+    <button class="tab" onclick="mudarAba('backup', this)">💾 Salvar / Backup</button>
   </div>
 
   <!-- ===== CLIENTES ===== -->
@@ -172,30 +180,41 @@ footer { text-align:center; color:#78909c; font-size:0.8em; padding:20px 0; }
     </div>
   </div>
 
-  <!-- ===== BACKUP ===== -->
+  <!-- ===== BACKUP / WHATSAPP ===== -->
   <div id="tab-backup" class="section">
     <div class="card">
-      <h2>Salvar e Transferir Dados</h2>
-      <p style="font-size:0.85em;color:#b0bec5;margin-bottom:15px;">Salve tudo agora, exporte um backup (para levar a outro computador) ou importe um backup existente.</p>
+      <h2>Salvar e Enviar Dados</h2>
+      <p style="font-size:0.85em;color:#b0bec5;margin-bottom:15px;">Salve tudo, exporte backup (para outro computador) ou envie o relatório pelo WhatsApp.</p>
       <div style="display:flex;gap:10px;flex-wrap:wrap;">
         <button class="primary success" style="flex:1;min-width:180px;margin-top:0;" onclick="salvarTudoAgora()">💾 Salvar Tudo</button>
-        <button class="primary" style="flex:1;min-width:180px;margin-top:0;" onclick="exportarDados()">⬇️ Exportar Backup (JSON)</button>
+        <button class="primary" style="flex:1;min-width:180px;margin-top:0;" onclick="exportarDados()">⬇️ Exportar Backup</button>
         <button class="primary" style="flex:1;min-width:180px;margin-top:0;" onclick="document.getElementById('fileImport').click()">⬆️ Importar Backup</button>
-        <button class="primary danger" style="flex:1;min-width:180px;margin-top:0;" onclick="limparTudo()">🗑️ Apagar Todos os Cadastros</button>
+        <button class="primary danger" style="flex:1;min-width:180px;margin-top:0;" onclick="limparTudo()">🗑️ Apagar Tudo</button>
       </div>
       <input type="file" id="fileImport" accept=".json" style="display:none" onchange="importarDados(event)">
       <div class="msg" id="msgBackup"></div>
-      <div class="info-box">
-        <b>📌 Como passar os dados para outro computador:</b><br>
-        1. Clique em <b>Exportar Backup (JSON)</b> — um arquivo será baixado.<br>
-        2. Leve esse arquivo para o outro computador (pen drive, WhatsApp, e-mail...).<br>
-        3. No outro computador, abra este site e clique em <b>Importar Backup</b>, escolhendo o arquivo.<br>
-        4. Pronto! Todos os clientes, funcionários e serviços estarão lá.
+
+      <div style="margin-top:20px;padding-top:20px;border-top:1px solid rgba(255,255,255,0.15);">
+        <h2 style="font-size:1.1em;color:#25d366;margin-bottom:12px;">📱 Enviar para WhatsApp</h2>
+        <p style="font-size:0.85em;color:#b0bec5;margin-bottom:12px;">Envia o relatório completo (clientes, funcionários e serviços) para o número <b style="color:#25d366;">(12) 99769-0407</b>.</p>
+        <button class="primary whats" style="width:100%;margin-top:0;padding:14px;font-size:1em;" onclick="enviarWhatsApp()">📱 Enviar Tudo pelo WhatsApp</button>
+        <div class="info-box wa">
+          <b>💡 Como funciona:</b><br>
+          1. O relatório completo é <b>copiado automaticamente</b> para a área de transferência.<br>
+          2. O WhatsApp abre no número <b>(12) 99769-0407</b> com uma mensagem pronta.<br>
+          3. Basta <b>colar (Ctrl+V)</b> o relatório no campo de mensagem e enviar.<br>
+          4. Se o WhatsApp não abrir sozinho, o relatório também é <b>baixado como arquivo .txt</b> para você anexar ou copiar manualmente.
+        </div>
       </div>
     </div>
   </div>
 
-  <footer>TV Vale na Rede © <span id="ano"></span> — Todos os direitos reservados</footer>
+  <!-- BOTÃO SAIR -->
+  <div class="exit-bar">
+    <button onclick="sairPrograma()">🚪 Sair do Programa (salva tudo)</button>
+  </div>
+
+  <footer>TVVALENAREDE © <span id="ano"></span> — Todos os direitos reservados</footer>
 </div>
 
 <!-- ===== MODAL DE SERVIÇOS ===== -->
@@ -203,7 +222,7 @@ footer { text-align:center; color:#78909c; font-size:0.8em; padding:20px 0; }
   <div class="modal-content">
     <h2>📝 Serviços — <span id="modalNome"></span></h2>
     <div class="info" id="modalInfo"></div>
-    <label>Descreva os serviços que a TV Vale na Rede vai prestar (até 30 linhas):</label>
+    <label>Descreva os serviços que a TVVALENAREDE vai prestar (até 30 linhas):</label>
     <textarea id="txtServicos" rows="30" placeholder="Ex.:&#10;1. Gestão de redes sociais&#10;2. Criação de site institucional&#10;3. Produção de vídeos promocionais&#10;4. Campanhas de tráfego pago&#10;..."></textarea>
     <div class="contador">Linhas usadas: <span id="contLinhas">0</span> / 30</div>
     <div class="modal-actions">
@@ -219,6 +238,7 @@ const SENHA = 'tvvalenarede25';
 const LIM_CLI = 100;
 const LIM_FUNC = 30;
 const MAX_LINHAS_SERV = 30;
+const WHATSAPP_NUM = '5512997690407'; // Brasil 55 + DDD 12 + número
 
 let clientes = [];
 let funcionarios = [];
@@ -245,6 +265,21 @@ function mostrarApp() {
   carregar();
   renderClientes();
   renderFuncionarios();
+}
+
+/* ========= SAIR DO PROGRAMA ========= */
+function sairPrograma() {
+  // Salva TUDO automaticamente antes de sair
+  persistir();
+  const totalCli = clientes.length;
+  const totalFunc = funcionarios.length;
+
+  sessionStorage.removeItem('tvvn_logado');
+
+  alert('✅ Tudo salvo com sucesso!\n\n📊 ' + totalCli + ' cliente(s) e ' + totalFunc + ' funcionário(s) salvos no navegador.\n\nO programa será fechado.');
+
+  // Volta para a tela de login (equivalente a "sair")
+  location.reload();
 }
 
 /* ========= PERSISTÊNCIA ========= */
@@ -451,7 +486,7 @@ function excluirFuncionario(id) {
 /* ========= BACKUP ========= */
 function exportarDados() {
   const dados = {
-    empresa: 'TV Vale na Rede',
+    empresa: 'TVVALENAREDE',
     exportadoEm: new Date().toLocaleString('pt-BR'),
     clientes: clientes,
     funcionarios: funcionarios
@@ -509,6 +544,94 @@ function limparTudo() {
   renderClientes();
   renderFuncionarios();
   mostrarMsg($('msgBackup'), '🗑️ Todos os cadastros foram apagados.', 'ok');
+}
+
+/* ========= RELATÓRIO / WHATSAPP ========= */
+function gerarRelatorio() {
+  let t = '📺 *TVVALENAREDE* — Relatório de Cadastros\n';
+  t += '📅 Gerado em: ' + new Date().toLocaleString('pt-BR') + '\n';
+  t += '━━━━━━━━━━━━━━━━━━━━━━\n\n';
+
+  t += `🏪 *CLIENTES (${clientes.length}/100)*\n`;
+  t += '━━━━━━━━━━━━━━━━━━━━━━\n';
+  if (clientes.length === 0) {
+    t += '(nenhum cliente cadastrado)\n';
+  } else {
+    clientes.forEach((c, i) => {
+      t += `\n*${i + 1}. ${c.nome}*\n`;
+      t += `   • CNPJ: ${c.cnpj}\n`;
+      t += `   • Endereço: ${c.endereco}\n`;
+      if (c.site) t += `   • Site: ${c.site}\n`;
+      if (c.servicos && c.servicos.trim()) {
+        t += `   • Serviços que a TVVALENAREDE vai prestar:\n`;
+        c.servicos.split('\n').forEach(linha => {
+          if (linha.trim()) t += `      ${linha}\n`;
+        });
+      } else {
+        t += `   • Serviços: (não cadastrados)\n`;
+      }
+    });
+  }
+
+  t += `\n👤 *FUNCIONÁRIOS (${funcionarios.length}/30)*\n`;
+  t += '━━━━━━━━━━━━━━━━━━━━━━\n';
+  if (funcionarios.length === 0) {
+    t += '(nenhum funcionário cadastrado)\n';
+  } else {
+    funcionarios.forEach((f, i) => {
+      t += `\n*${i + 1}. ${f.nome}*\n`;
+      t += `   • Cargo: ${f.cargo}\n`;
+      t += `   • CPF/Matrícula: ${f.cpf}\n`;
+      if (f.telefone) t += `   • Telefone: ${f.telefone}\n`;
+    });
+  }
+
+  t += '\n━━━━━━━━━━━━━━━━━━━━━━\n';
+  t += '✅ Fim do relatório TVVALENAREDE';
+  return t;
+}
+
+function baixarRelatorioTxt(texto) {
+  const blob = new Blob([texto], { type: 'text/plain;charset=utf-8' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'tvvalenarede_relatorio_' + new Date().toISOString().slice(0, 10) + '.txt';
+  a.click();
+  URL.revokeObjectURL(a.href);
+}
+
+function enviarWhatsApp() {
+  if (clientes.length === 0 && funcionarios.length === 0) {
+    mostrarMsg($('msgBackup'), '⚠️ Nenhum cadastro para enviar.', 'err');
+    return;
+  }
+
+  persistir(); // garante que está tudo salvo
+  const relatorio = gerarRelatorio();
+
+  // Tenta copiar para a área de transferência
+  const copiar = (navigator.clipboard && navigator.clipboard.writeText)
+    ? navigator.clipboard.writeText(relatorio)
+    : Promise.reject('sem clipboard');
+
+  copiar.then(() => {
+    // Abre WhatsApp com mensagem curta pedindo para colar
+    const msg = '📋 *TVVALENAREDE* — Relatório gerado!\n\nCole aqui (Ctrl+V) o relatório completo que foi copiado.\n\nSe não colar, use o arquivo .txt que também foi baixado.';
+    const url = 'https://wa.me/' + WHATSAPP_NUM + '?text=' + encodeURIComponent(msg);
+    window.open(url, '_blank');
+
+    // Também baixa como .txt por segurança
+    baixarRelatorioTxt(relatorio);
+
+    mostrarMsg($('msgBackup'), '✅ Relatório copiado + arquivo .txt baixado! WhatsApp abrindo...', 'ok');
+  }).catch(() => {
+    // Fallback: baixa o arquivo e abre WhatsApp com aviso
+    baixarRelatorioTxt(relatorio);
+    const msg = '📋 *TVVALENAREDE* — Relatório gerado!\n\nO relatório completo foi baixado como arquivo .txt. Por favor, anexe-o aqui.';
+    const url = 'https://wa.me/' + WHATSAPP_NUM + '?text=' + encodeURIComponent(msg);
+    window.open(url, '_blank');
+    mostrarMsg($('msgBackup'), '✅ Relatório baixado como .txt! Anexe-o no WhatsApp.', 'ok');
+  });
 }
 
 /* ========= INICIALIZAÇÃO ========= */
