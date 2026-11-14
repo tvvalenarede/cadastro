@@ -3,644 +3,262 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>TVVALENAREDE - Sistema de Cadastro</title>
+<title>TV Vale na Rede - Sistema de Cadastro</title>
 <style>
-* { margin:0; padding:0; box-sizing:border-box; font-family:'Segoe UI',Arial,sans-serif; }
-body { background:linear-gradient(135deg,#0f2027,#203a43,#2c5364); min-height:100vh; color:#fff; }
-
-/* LOGIN */
-#loginScreen { position:fixed; inset:0; display:flex; align-items:center; justify-content:center; background:linear-gradient(135deg,#0f2027,#203a43,#2c5364); z-index:1000; padding:20px; }
-.login-box { background:rgba(255,255,255,0.08); border:1px solid rgba(255,255,255,0.2); border-radius:20px; padding:40px 30px; max-width:400px; width:100%; text-align:center; backdrop-filter:blur(12px); box-shadow:0 10px 40px rgba(0,0,0,0.4); }
-.login-box h1 { font-size:1.5em; margin-bottom:8px; letter-spacing:1px; }
-.login-box h1 span { color:#4fc3f7; }
-.login-box p { color:#b0bec5; font-size:0.85em; margin-bottom:25px; }
-.login-box input { width:100%; padding:13px; border-radius:10px; border:1px solid rgba(255,255,255,0.25); background:rgba(0,0,0,0.3); color:#fff; font-size:1em; outline:none; margin-bottom:15px; text-align:center; }
-.login-box input:focus { border-color:#4fc3f7; box-shadow:0 0 0 2px rgba(79,195,247,0.3); }
-.login-box button { width:100%; padding:13px; border:none; border-radius:10px; background:linear-gradient(90deg,#0288d1,#4fc3f7); color:#0f2027; font-weight:bold; font-size:1em; cursor:pointer; transition:0.2s; }
-.login-box button:hover { transform:translateY(-2px); box-shadow:0 6px 18px rgba(79,195,247,0.4); }
-#loginErro { color:#ef5350; font-size:0.85em; margin-top:10px; min-height:20px; }
-
-/* APP */
-#app { max-width:1200px; margin:0 auto; padding:20px; display:none; }
-header { text-align:center; padding:20px; background:rgba(255,255,255,0.07); border-radius:15px; border:1px solid rgba(255,255,255,0.15); margin-bottom:20px; }
-header h1 { font-size:1.7em; letter-spacing:1.5px; }
-header h1 span { color:#4fc3f7; }
-header p { color:#cfd8dc; font-size:0.9em; margin-top:5px; }
-
-.tabs { display:flex; gap:10px; margin-bottom:20px; flex-wrap:wrap; }
-.tab { flex:1; min-width:120px; padding:12px; border:none; border-radius:10px; background:rgba(255,255,255,0.07); color:#cfd8dc; font-weight:bold; cursor:pointer; transition:0.2s; border:1px solid rgba(255,255,255,0.1); font-size:0.95em; }
-.tab.active { background:linear-gradient(90deg,#0288d1,#4fc3f7); color:#0f2027; }
-.tab:hover { transform:translateY(-2px); }
-
-.section { display:none; }
-.section.active { display:block; }
-
-.card { background:rgba(255,255,255,0.07); border:1px solid rgba(255,255,255,0.15); border-radius:15px; padding:22px; backdrop-filter:blur(10px); margin-bottom:20px; box-shadow:0 8px 25px rgba(0,0,0,0.25); }
-.card h2 { font-size:1.2em; color:#4fc3f7; margin-bottom:15px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; }
-.counter { background:#4fc3f7; color:#0f2027; padding:4px 12px; border-radius:20px; font-size:0.78em; font-weight:bold; }
-
-.form-grid { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
-@media (max-width:700px) { .form-grid { grid-template-columns:1fr; } }
-label { display:block; font-size:0.82em; color:#cfd8dc; margin-bottom:4px; }
-input, textarea { width:100%; padding:10px 12px; border-radius:8px; border:1px solid rgba(255,255,255,0.25); background:rgba(0,0,0,0.25); color:#fff; font-size:0.95em; outline:none; transition:0.2s; font-family:inherit; }
-input:focus, textarea:focus { border-color:#4fc3f7; box-shadow:0 0 0 2px rgba(79,195,247,0.3); }
-
-button.primary { margin-top:15px; padding:12px; border:none; border-radius:8px; background:linear-gradient(90deg,#0288d1,#4fc3f7); color:#0f2027; font-weight:bold; font-size:0.95em; cursor:pointer; transition:0.2s; }
-button.primary:hover { transform:translateY(-2px); box-shadow:0 6px 18px rgba(79,195,247,0.4); }
-button.primary:disabled { opacity:0.4; cursor:not-allowed; transform:none; box-shadow:none; }
-button.success { background:linear-gradient(90deg,#2e7d32,#66bb6a); color:#fff; }
-button.danger { background:linear-gradient(90deg,#b71c1c,#ef5350); color:#fff; }
-button.whats { background:linear-gradient(90deg,#128c7e,#25d366); color:#fff; }
-button.exit { background:linear-gradient(90deg,#b71c1c,#ef5350); color:#fff; }
-
-.msg { margin-top:12px; padding:10px; border-radius:8px; font-size:0.85em; display:none; }
-.msg.ok { background:rgba(76,175,80,0.25); border:1px solid #4caf50; display:block; }
-.msg.err { background:rgba(239,83,80,0.25); border:1px solid #ef5350; display:block; }
-
-.cards-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(280px,1fr)); gap:15px; margin-top:15px; }
-.client-card { background:rgba(0,0,0,0.25); border:1px solid rgba(255,255,255,0.15); border-radius:12px; padding:16px; transition:0.2s; }
-.client-card:hover { border-color:#4fc3f7; transform:translateY(-2px); }
-.client-card h3 { color:#4fc3f7; font-size:1.05em; margin-bottom:8px; word-break:break-word; }
-.client-card p { font-size:0.82em; color:#cfd8dc; margin:4px 0; word-break:break-word; }
-.client-card p b { color:#fff; }
-.card-actions { display:flex; gap:8px; margin-top:12px; }
-.card-actions button { padding:8px; border:none; border-radius:6px; cursor:pointer; font-size:0.82em; font-weight:bold; transition:0.2s; }
-.btn-serv { flex:1; background:linear-gradient(90deg,#0288d1,#4fc3f7); color:#0f2027; }
-.btn-del { flex:0 0 45px; background:#ef5350; color:#fff; }
-.btn-serv:hover, .btn-del:hover { opacity:0.85; transform:scale(1.03); }
-
-.empty { text-align:center; color:#90a4ae; padding:30px; font-style:italic; grid-column:1/-1; }
-
-/* MODAL */
-.modal { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.75); z-index:900; align-items:center; justify-content:center; padding:20px; overflow-y:auto; }
-.modal.open { display:flex; }
-.modal-content { background:linear-gradient(135deg,#1a2f38,#203a43); border:1px solid rgba(79,195,247,0.3); border-radius:15px; padding:25px; max-width:750px; width:100%; max-height:95vh; overflow-y:auto; box-shadow:0 20px 60px rgba(0,0,0,0.6); }
-.modal-content h2 { color:#4fc3f7; margin-bottom:8px; font-size:1.2em; word-break:break-word; }
-.modal-content .info { font-size:0.82em; color:#b0bec5; margin-bottom:15px; line-height:1.6; }
-.modal-content textarea { min-height:420px; resize:vertical; line-height:1.6; font-size:0.9em; }
-.contador { text-align:right; font-size:0.8em; color:#90a4ae; margin-top:6px; }
-.modal-actions { display:flex; gap:10px; margin-top:15px; flex-wrap:wrap; }
-.modal-actions button { flex:1; min-width:130px; padding:12px; border:none; border-radius:8px; font-weight:bold; cursor:pointer; font-size:0.9em; }
-
-/* Tabela funcionários */
-table { width:100%; border-collapse:collapse; font-size:0.85em; margin-top:10px; }
-th, td { padding:10px 8px; text-align:left; border-bottom:1px solid rgba(255,255,255,0.12); }
-th { color:#4fc3f7; font-size:0.8em; text-transform:uppercase; }
-td { color:#e0e0e0; word-break:break-word; }
-.btn-remove { padding:5px 10px; border:none; border-radius:6px; background:#ef5350; color:#fff; cursor:pointer; font-size:0.85em; }
-
-.info-box { background:rgba(79,195,247,0.1); border:1px solid rgba(79,195,247,0.4); border-radius:10px; padding:15px; margin-top:15px; font-size:0.85em; color:#cfd8dc; line-height:1.7; }
-.info-box b { color:#4fc3f7; }
-.info-box.wa { background:rgba(37,211,102,0.1); border-color:rgba(37,211,102,0.4); }
-.info-box.wa b { color:#25d366; }
-
-.exit-bar { text-align:center; margin:25px 0 15px; }
-.exit-bar button { padding:14px 40px; border:none; border-radius:10px; background:linear-gradient(90deg,#b71c1c,#ef5350); color:#fff; font-weight:bold; font-size:1em; cursor:pointer; transition:0.2s; box-shadow:0 4px 15px rgba(239,83,80,0.3); }
-.exit-bar button:hover { transform:translateY(-2px); box-shadow:0 6px 20px rgba(239,83,80,0.5); }
-
-footer { text-align:center; color:#78909c; font-size:0.8em; padding:20px 0; }
-
-@media (max-width:600px) {
-  header h1 { font-size:1.2em; }
-  .modal-content textarea { min-height:320px; }
-  .login-box { padding:30px 22px; }
-}
+  * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Arial, sans-serif; }
+  body {
+    background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
+    min-height: 100vh; color: #fff; padding: 20px;
+  }
+  header {
+    text-align: center; padding: 25px 10px;
+    background: rgba(255,255,255,0.08);
+    border-radius: 15px; margin-bottom: 25px;
+    border: 1px solid rgba(255,255,255,0.15);
+    backdrop-filter: blur(8px);
+  }
+  header h1 { font-size: 2em; letter-spacing: 1px; }
+  header h1 span { color: #4fc3f7; }
+  header p { margin-top: 8px; color: #cfd8dc; font-size: 0.95em; }
+  .container { max-width: 1100px; margin: 0 auto; }
+  .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 25px; }
+  @media (max-width: 850px) { .grid { grid-template-columns: 1fr; } }
+  .card {
+    background: rgba(255,255,255,0.07);
+    border: 1px solid rgba(255,255,255,0.15);
+    border-radius: 15px; padding: 22px;
+    backdrop-filter: blur(10px);
+    box-shadow: 0 8px 25px rgba(0,0,0,0.3);
+  }
+  .card h2 {
+    font-size: 1.25em; margin-bottom: 6px; color: #4fc3f7;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .card .sub { font-size: 0.82em; color: #b0bec5; margin-bottom: 15px; }
+  .counter {
+    float: right; font-size: 0.8em; background: #4fc3f7;
+    color: #0f2027; padding: 3px 10px; border-radius: 20px; font-weight: bold;
+  }
+  label { display: block; font-size: 0.85em; margin: 10px 0 4px; color: #cfd8dc; }
+  input {
+    width: 100%; padding: 10px 12px; border-radius: 8px;
+    border: 1px solid rgba(255,255,255,0.25);
+    background: rgba(0,0,0,0.25); color: #fff; font-size: 0.95em;
+    outline: none; transition: 0.2s;
+  }
+  input:focus { border-color: #4fc3f7; box-shadow: 0 0 0 2px rgba(79,195,247,0.3); }
+  button {
+    margin-top: 15px; width: 100%; padding: 12px;
+    border: none; border-radius: 8px; cursor: pointer;
+    background: linear-gradient(90deg, #0288d1, #4fc3f7);
+    color: #0f2027; font-weight: bold; font-size: 1em;
+    transition: 0.2s; letter-spacing: 0.5px;
+  }
+  button:hover { transform: translateY(-2px); box-shadow: 0 6px 18px rgba(79,195,247,0.4); }
+  button:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
+  table { width: 100%; border-collapse: collapse; margin-top: 15px; font-size: 0.85em; }
+  th, td { padding: 8px 6px; text-align: left; border-bottom: 1px solid rgba(255,255,255,0.12); }
+  th { color: #4fc3f7; font-size: 0.85em; text-transform: uppercase; }
+  td { color: #e0e0e0; word-break: break-word; }
+  .empty { text-align: center; color: #90a4ae; padding: 20px; font-style: italic; font-size: 0.9em; }
+  .btn-del {
+    background: #ef5350; color: #fff; border: none; padding: 4px 9px;
+    border-radius: 6px; cursor: pointer; font-size: 0.8em; width: auto; margin: 0;
+  }
+  .btn-del:hover { background: #e53935; transform: none; box-shadow: none; }
+  .msg {
+    margin-top: 12px; padding: 10px; border-radius: 8px;
+    font-size: 0.85em; display: none;
+  }
+  .msg.ok { background: rgba(76,175,80,0.25); border: 1px solid #4caf50; display: block; }
+  .msg.err { background: rgba(239,83,80,0.25); border: 1px solid #ef5350; display: block; }
+  .full { grid-column: 1 / -1; }
+  .actions { margin-top: 10px; display: flex; gap: 10px; flex-wrap: wrap; }
+  .actions button { width: auto; flex: 1; padding: 10px; font-size: 0.85em; }
+  .btn-export { background: linear-gradient(90deg, #2e7d32, #66bb6a); }
+  .btn-clear { background: linear-gradient(90deg, #b71c1c, #ef5350); color: #fff; }
+  footer { text-align: center; margin-top: 30px; color: #78909c; font-size: 0.8em; padding-bottom: 20px; }
 </style>
 </head>
 <body>
-
-<!-- ===== TELA DE LOGIN ===== -->
-<div id="loginScreen">
-  <div class="login-box">
-    <h1>📺 <span>TVVALENAREDE</span></h1>
-    <p>Sistema de Cadastro — Acesso Restrito</p>
-    <input type="password" id="senhaInput" placeholder="Digite a senha" onkeypress="if(event.key==='Enter')entrar()">
-    <button onclick="entrar()">🔓 Entrar</button>
-    <div id="loginErro"></div>
-  </div>
-</div>
-
-<!-- ===== APLICAÇÃO ===== -->
-<div id="app">
+<div class="container">
   <header>
-    <h1>📺 <span>TVVALENAREDE</span></h1>
+    <h1>📺 TV <span>Vale na Rede</span></h1>
     <p>Sistema de Cadastro de Clientes e Funcionários</p>
   </header>
 
-  <div class="tabs">
-    <button class="tab active" onclick="mudarAba('clientes', this)">🏪 Clientes</button>
-    <button class="tab" onclick="mudarAba('funcionarios', this)">👤 Funcionários</button>
-    <button class="tab" onclick="mudarAba('backup', this)">💾 Salvar / Backup</button>
-  </div>
-
-  <!-- ===== CLIENTES ===== -->
-  <div id="tab-clientes" class="section active">
+  <div class="grid">
+    <!-- CADASTRO CLIENTE -->
     <div class="card">
-      <h2>Cadastrar Cliente <span class="counter" id="cntCli">0 / 100</span></h2>
+      <h2>🏪 Cadastro de Cliente <span class="counter" id="cntCli">0 / 100</span></h2>
+      <div class="sub">Supermercado / Empresa parceira</div>
       <form id="formCli">
-        <div class="form-grid">
-          <div><label>Nome do Cliente / Supermercado *</label><input type="text" id="cliNome" placeholder="Ex.: Supermercado Bom Preço" required></div>
-          <div><label>CNPJ *</label><input type="text" id="cliCnpj" placeholder="00.000.000/0000-00" required></div>
-          <div><label>Endereço *</label><input type="text" id="cliEnd" placeholder="Rua, nº, bairro, cidade" required></div>
-          <div><label>Site</label><input type="text" id="cliSite" placeholder="www.exemplo.com.br"></div>
-        </div>
-        <button type="submit" class="primary" id="btnCli">➕ Cadastrar Cliente</button>
+        <label>Nome do Cliente / Supermercado</label>
+        <input type="text" id="cliNome" placeholder="Ex.: Supermercado Bom Preço" required>
+        <label>CNPJ</label>
+        <input type="text" id="cliCnpj" placeholder="00.000.000/0000-00" required>
+        <label>Endereço</label>
+        <input type="text" id="cliEnd" placeholder="Rua, nº, bairro, cidade" required>
+        <label>Site</label>
+        <input type="text" id="cliSite" placeholder="www.exemplo.com.br">
+        <button type="submit" id="btnCli">Cadastrar Cliente</button>
       </form>
       <div class="msg" id="msgCli"></div>
+      <div style="max-height:260px; overflow-y:auto;">
+        <table id="tblCli">
+          <thead><tr><th>#</th><th>Nome</th><th>CNPJ</th><th>Endereço</th><th>Site</th><th></th></tr></thead>
+          <tbody></tbody>
+        </table>
+      </div>
     </div>
 
+    <!-- CADASTRO FUNCIONÁRIO -->
     <div class="card">
-      <h2>Clientes Cadastrados <span class="counter" id="cntCli2">0 / 100</span></h2>
-      <div class="cards-grid" id="listaClientes"></div>
-    </div>
-  </div>
-
-  <!-- ===== FUNCIONÁRIOS ===== -->
-  <div id="tab-funcionarios" class="section">
-    <div class="card">
-      <h2>Cadastrar Funcionário <span class="counter" id="cntFunc">0 / 30</span></h2>
+      <h2>👤 Cadastro de Funcionário <span class="counter" id="cntFunc">0 / 10</span></h2>
+      <div class="sub">Colaboradores da TV Vale na Rede</div>
       <form id="formFunc">
-        <div class="form-grid">
-          <div><label>Nome do Funcionário *</label><input type="text" id="funcNome" placeholder="Nome completo" required></div>
-          <div><label>Cargo *</label><input type="text" id="funcCargo" placeholder="Ex.: Vendedor, Técnico" required></div>
-          <div><label>CPF / Matrícula *</label><input type="text" id="funcCpf" placeholder="000.000.000-00" required></div>
-          <div><label>Telefone</label><input type="text" id="funcTel" placeholder="(00) 00000-0000"></div>
-        </div>
-        <button type="submit" class="primary" id="btnFunc">➕ Cadastrar Funcionário</button>
+        <label>Nome do Funcionário</label>
+        <input type="text" id="funcNome" placeholder="Nome completo" required>
+        <label>Cargo</label>
+        <input type="text" id="funcCargo" placeholder="Ex.: Vendedor, Técnico" required>
+        <label>CPF / Matrícula</label>
+        <input type="text" id="funcCpf" placeholder="000.000.000-00" required>
+        <label>Telefone</label>
+        <input type="text" id="funcTel" placeholder="(00) 00000-0000">
+        <button type="submit" id="btnFunc">Cadastrar Funcionário</button>
       </form>
       <div class="msg" id="msgFunc"></div>
-    </div>
-
-    <div class="card">
-      <h2>Funcionários Cadastrados <span class="counter" id="cntFunc2">0 / 30</span></h2>
-      <table>
-        <thead><tr><th>#</th><th>Nome</th><th>Cargo</th><th>CPF</th><th>Telefone</th><th></th></tr></thead>
-        <tbody id="tblFunc"></tbody>
-      </table>
-    </div>
-  </div>
-
-  <!-- ===== BACKUP / WHATSAPP ===== -->
-  <div id="tab-backup" class="section">
-    <div class="card">
-      <h2>Salvar e Enviar Dados</h2>
-      <p style="font-size:0.85em;color:#b0bec5;margin-bottom:15px;">Salve tudo, exporte backup (para outro computador) ou envie o relatório pelo WhatsApp.</p>
-      <div style="display:flex;gap:10px;flex-wrap:wrap;">
-        <button class="primary success" style="flex:1;min-width:180px;margin-top:0;" onclick="salvarTudoAgora()">💾 Salvar Tudo</button>
-        <button class="primary" style="flex:1;min-width:180px;margin-top:0;" onclick="exportarDados()">⬇️ Exportar Backup</button>
-        <button class="primary" style="flex:1;min-width:180px;margin-top:0;" onclick="document.getElementById('fileImport').click()">⬆️ Importar Backup</button>
-        <button class="primary danger" style="flex:1;min-width:180px;margin-top:0;" onclick="limparTudo()">🗑️ Apagar Tudo</button>
+      <div style="max-height:260px; overflow-y:auto;">
+        <table id="tblFunc">
+          <thead><tr><th>#</th><th>Nome</th><th>Cargo</th><th>CPF</th><th>Telefone</th><th></th></tr></thead>
+          <tbody></tbody>
+        </table>
       </div>
-      <input type="file" id="fileImport" accept=".json" style="display:none" onchange="importarDados(event)">
-      <div class="msg" id="msgBackup"></div>
+    </div>
 
-      <div style="margin-top:20px;padding-top:20px;border-top:1px solid rgba(255,255,255,0.15);">
-        <h2 style="font-size:1.1em;color:#25d366;margin-bottom:12px;">📱 Enviar para WhatsApp</h2>
-        <p style="font-size:0.85em;color:#b0bec5;margin-bottom:12px;">Envia o relatório completo (clientes, funcionários e serviços) para o número <b style="color:#25d366;">(12) 99769-0407</b>.</p>
-        <button class="primary whats" style="width:100%;margin-top:0;padding:14px;font-size:1em;" onclick="enviarWhatsApp()">📱 Enviar Tudo pelo WhatsApp</button>
-        <div class="info-box wa">
-          <b>💡 Como funciona:</b><br>
-          1. O relatório completo é <b>copiado automaticamente</b> para a área de transferência.<br>
-          2. O WhatsApp abre no número <b>(12) 99769-0407</b> com uma mensagem pronta.<br>
-          3. Basta <b>colar (Ctrl+V)</b> o relatório no campo de mensagem e enviar.<br>
-          4. Se o WhatsApp não abrir sozinho, o relatório também é <b>baixado como arquivo .txt</b> para você anexar ou copiar manualmente.
-        </div>
+    <!-- AÇÕES -->
+    <div class="card full">
+      <h2>⚙️ Ações do Sistema</h2>
+      <div class="actions">
+        <button class="btn-export" onclick="exportarDados()">⬇️ Exportar Dados (JSON)</button>
+        <button class="btn-clear" onclick="limparTudo()">🗑️ Limpar Todos os Cadastros</button>
       </div>
     </div>
   </div>
 
-  <!-- BOTÃO SAIR -->
-  <div class="exit-bar">
-    <button onclick="sairPrograma()">🚪 Sair do Programa (salva tudo)</button>
-  </div>
-
-  <footer>TVVALENAREDE © <span id="ano"></span> — Todos os direitos reservados</footer>
-</div>
-
-<!-- ===== MODAL DE SERVIÇOS ===== -->
-<div class="modal" id="modalServicos">
-  <div class="modal-content">
-    <h2>📝 Serviços — <span id="modalNome"></span></h2>
-    <div class="info" id="modalInfo"></div>
-    <label>Descreva os serviços que a TVVALENAREDE vai prestar (até 30 linhas):</label>
-    <textarea id="txtServicos" rows="30" placeholder="Ex.:&#10;1. Gestão de redes sociais&#10;2. Criação de site institucional&#10;3. Produção de vídeos promocionais&#10;4. Campanhas de tráfego pago&#10;..."></textarea>
-    <div class="contador">Linhas usadas: <span id="contLinhas">0</span> / 30</div>
-    <div class="modal-actions">
-      <button class="primary success" onclick="salvarServicos()">💾 Salvar Serviços</button>
-      <button class="primary danger" onclick="fecharModal()">Fechar</button>
-    </div>
-  </div>
+  <footer>TV Vale na Rede © <span id="ano"></span> — Sistema local (dados salvos no navegador)</footer>
 </div>
 
 <script>
-/* ========= CONFIGURAÇÕES ========= */
-const SENHA = 'tvvalenarede25';
-const LIM_CLI = 100;
-const LIM_FUNC = 30;
-const MAX_LINHAS_SERV = 30;
-const WHATSAPP_NUM = '5512997690407'; // Brasil 55 + DDD 12 + número
+  const LIM_CLI = 100, LIM_FUNC = 10;
+  let clientes = JSON.parse(localStorage.getItem('tv_clientes') || '[]');
+  let funcionarios = JSON.parse(localStorage.getItem('tv_funcionarios') || '[]');
 
-let clientes = [];
-let funcionarios = [];
-let clienteAtualId = null;
+  const $ = id => document.getElementById(id);
+  document.getElementById('ano').textContent = new Date().getFullYear();
 
-const $ = id => document.getElementById(id);
-
-/* ========= LOGIN ========= */
-function entrar() {
-  const senha = $('senhaInput').value;
-  if (senha === SENHA) {
-    sessionStorage.setItem('tvvn_logado', '1');
-    mostrarApp();
-  } else {
-    $('loginErro').textContent = '❌ Senha incorreta. Tente novamente.';
-    $('senhaInput').value = '';
-    $('senhaInput').focus();
+  function salvar() {
+    localStorage.setItem('tv_clientes', JSON.stringify(clientes));
+    localStorage.setItem('tv_funcionarios', JSON.stringify(funcionarios));
   }
-}
 
-function mostrarApp() {
-  $('loginScreen').style.display = 'none';
-  $('app').style.display = 'block';
-  carregar();
-  renderClientes();
-  renderFuncionarios();
-}
-
-/* ========= SAIR DO PROGRAMA ========= */
-function sairPrograma() {
-  // Salva TUDO automaticamente antes de sair
-  persistir();
-  const totalCli = clientes.length;
-  const totalFunc = funcionarios.length;
-
-  sessionStorage.removeItem('tvvn_logado');
-
-  alert('✅ Tudo salvo com sucesso!\n\n📊 ' + totalCli + ' cliente(s) e ' + totalFunc + ' funcionário(s) salvos no navegador.\n\nO programa será fechado.');
-
-  // Volta para a tela de login (equivalente a "sair")
-  location.reload();
-}
-
-/* ========= PERSISTÊNCIA ========= */
-function carregar() {
-  try {
-    clientes = JSON.parse(localStorage.getItem('tvvn_clientes') || '[]');
-    funcionarios = JSON.parse(localStorage.getItem('tvvn_funcionarios') || '[]');
-  } catch(e) { clientes = []; funcionarios = []; }
-}
-
-function persistir() {
-  localStorage.setItem('tvvn_clientes', JSON.stringify(clientes));
-  localStorage.setItem('tvvn_funcionarios', JSON.stringify(funcionarios));
-}
-
-function salvarTudoAgora() {
-  persistir();
-  mostrarMsg($('msgBackup'), '✅ Todos os dados foram salvos no navegador!', 'ok');
-}
-
-function mostrarMsg(el, texto, tipo) {
-  el.textContent = texto;
-  el.className = 'msg ' + tipo;
-  setTimeout(() => { el.className = 'msg'; el.textContent = ''; }, 4000);
-}
-
-function esc(s) {
-  return String(s == null ? '' : s).replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
-}
-
-/* ========= ABAS ========= */
-function mudarAba(nome, btn) {
-  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
-  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-  $('tab-' + nome).classList.add('active');
-  btn.classList.add('active');
-}
-
-/* ========= CLIENTES ========= */
-function renderClientes() {
-  const grid = $('listaClientes');
-  if (clientes.length === 0) {
-    grid.innerHTML = '<div class="empty">Nenhum cliente cadastrado ainda.</div>';
-  } else {
-    grid.innerHTML = clientes.map(c => `
-      <div class="client-card">
-        <h3>🏪 ${esc(c.nome)}</h3>
-        <p><b>CNPJ:</b> ${esc(c.cnpj)}</p>
-        <p><b>Endereço:</b> ${esc(c.endereco)}</p>
-        <p><b>Site:</b> ${esc(c.site || '—')}</p>
-        <p><b>Serviços:</b> ${c.servicos && c.servicos.trim() ? '✅ cadastrados' : '⚠️ não cadastrados'}</p>
-        <div class="card-actions">
-          <button class="btn-serv" onclick="abrirServicos('${c.id}')">📝 Serviços</button>
-          <button class="btn-del" onclick="excluirCliente('${c.id}')">🗑️</button>
-        </div>
-      </div>
-    `).join('');
+  function mostrarMsg(el, texto, tipo) {
+    el.textContent = texto;
+    el.className = 'msg ' + tipo;
+    setTimeout(() => { el.className = 'msg'; el.textContent = ''; }, 3500);
   }
-  const txt = clientes.length + ' / ' + LIM_CLI;
-  $('cntCli').textContent = txt;
-  $('cntCli2').textContent = txt;
-  $('btnCli').disabled = clientes.length >= LIM_CLI;
-}
 
-$('formCli').addEventListener('submit', e => {
-  e.preventDefault();
-  if (clientes.length >= LIM_CLI) {
-    mostrarMsg($('msgCli'), '❌ Limite de 100 clientes atingido!', 'err');
-    return;
-  }
-  const nome = $('cliNome').value.trim();
-  const cnpj = $('cliCnpj').value.trim();
-  const endereco = $('cliEnd').value.trim();
-  const site = $('cliSite').value.trim();
-  if (!nome || !cnpj || !endereco) {
-    mostrarMsg($('msgCli'), '❌ Preencha todos os campos obrigatórios (*).', 'err');
-    return;
-  }
-  clientes.push({
-    id: 'c' + Date.now() + Math.random().toString(36).slice(2, 7),
-    nome, cnpj, endereco, site, servicos: ''
-  });
-  persistir();
-  renderClientes();
-  $('formCli').reset();
-  mostrarMsg($('msgCli'), '✅ Cliente cadastrado com sucesso!', 'ok');
-});
-
-function excluirCliente(id) {
-  const c = clientes.find(x => x.id === id);
-  if (!c) return;
-  if (confirm('Excluir o cliente "' + c.nome + '"?\nEsta ação não pode ser desfeita.')) {
-    clientes = clientes.filter(x => x.id !== id);
-    persistir();
-    renderClientes();
-    mostrarMsg($('msgCli'), '🗑️ Cliente excluído.', 'ok');
-  }
-}
-
-/* ========= MODAL DE SERVIÇOS ========= */
-function abrirServicos(id) {
-  const c = clientes.find(x => x.id === id);
-  if (!c) return;
-  clienteAtualId = id;
-  $('modalNome').textContent = c.nome;
-  $('modalInfo').innerHTML = `<b>CNPJ:</b> ${esc(c.cnpj)}<br><b>Endereço:</b> ${esc(c.endereco)}${c.site ? '<br><b>Site:</b> ' + esc(c.site) : ''}`;
-  $('txtServicos').value = c.servicos || '';
-  atualizarContadorLinhas();
-  $('modalServicos').classList.add('open');
-  setTimeout(() => $('txtServicos').focus(), 100);
-}
-
-function fecharModal() {
-  $('modalServicos').classList.remove('open');
-  clienteAtualId = null;
-}
-
-function atualizarContadorLinhas() {
-  const val = $('txtServicos').value;
-  $('contLinhas').textContent = val === '' ? 0 : val.split('\n').length;
-}
-
-$('txtServicos').addEventListener('input', function() {
-  let linhas = this.value.split('\n');
-  if (linhas.length > MAX_LINHAS_SERV) {
-    this.value = linhas.slice(0, MAX_LINHAS_SERV).join('\n');
-  }
-  atualizarContadorLinhas();
-});
-
-function salvarServicos() {
-  if (!clienteAtualId) return;
-  const c = clientes.find(x => x.id === clienteAtualId);
-  if (!c) return;
-  c.servicos = $('txtServicos').value;
-  persistir();
-  renderClientes();
-  mostrarMsg($('msgCli'), '✅ Serviços do cliente "' + c.nome + '" salvos!', 'ok');
-  fecharModal();
-}
-
-$('modalServicos').addEventListener('click', function(e) {
-  if (e.target === this) fecharModal();
-});
-
-/* ========= FUNCIONÁRIOS ========= */
-function renderFuncionarios() {
-  const tbody = $('tblFunc');
-  if (funcionarios.length === 0) {
-    tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;color:#90a4ae;padding:25px;font-style:italic;">Nenhum funcionário cadastrado ainda.</td></tr>';
-  } else {
-    tbody.innerHTML = funcionarios.map((f, i) => `
-      <tr>
-        <td>${i + 1}</td>
-        <td>${esc(f.nome)}</td>
-        <td>${esc(f.cargo)}</td>
-        <td>${esc(f.cpf)}</td>
-        <td>${esc(f.telefone || '—')}</td>
-        <td><button class="btn-remove" onclick="excluirFuncionario('${f.id}')">🗑️</button></td>
-      </tr>
-    `).join('');
-  }
-  const txt = funcionarios.length + ' / ' + LIM_FUNC;
-  $('cntFunc').textContent = txt;
-  $('cntFunc2').textContent = txt;
-  $('btnFunc').disabled = funcionarios.length >= LIM_FUNC;
-}
-
-$('formFunc').addEventListener('submit', e => {
-  e.preventDefault();
-  if (funcionarios.length >= LIM_FUNC) {
-    mostrarMsg($('msgFunc'), '❌ Limite de 30 funcionários atingido!', 'err');
-    return;
-  }
-  const nome = $('funcNome').value.trim();
-  const cargo = $('funcCargo').value.trim();
-  const cpf = $('funcCpf').value.trim();
-  const telefone = $('funcTel').value.trim();
-  if (!nome || !cargo || !cpf) {
-    mostrarMsg($('msgFunc'), '❌ Preencha todos os campos obrigatórios (*).', 'err');
-    return;
-  }
-  funcionarios.push({
-    id: 'f' + Date.now() + Math.random().toString(36).slice(2, 7),
-    nome, cargo, cpf, telefone
-  });
-  persistir();
-  renderFuncionarios();
-  $('formFunc').reset();
-  mostrarMsg($('msgFunc'), '✅ Funcionário cadastrado com sucesso!', 'ok');
-});
-
-function excluirFuncionario(id) {
-  const f = funcionarios.find(x => x.id === id);
-  if (!f) return;
-  if (confirm('Excluir o funcionário "' + f.nome + '"?')) {
-    funcionarios = funcionarios.filter(x => x.id !== id);
-    persistir();
-    renderFuncionarios();
-    mostrarMsg($('msgFunc'), '🗑️ Funcionário excluído.', 'ok');
-  }
-}
-
-/* ========= BACKUP ========= */
-function exportarDados() {
-  const dados = {
-    empresa: 'TVVALENAREDE',
-    exportadoEm: new Date().toLocaleString('pt-BR'),
-    clientes: clientes,
-    funcionarios: funcionarios
-  };
-  const blob = new Blob([JSON.stringify(dados, null, 2)], { type: 'application/json' });
-  const a = document.createElement('a');
-  a.href = URL.createObjectURL(blob);
-  a.download = 'tvvalenarede_backup_' + new Date().toISOString().slice(0, 10) + '.json';
-  a.click();
-  URL.revokeObjectURL(a.href);
-  mostrarMsg($('msgBackup'), '✅ Backup exportado! Guarde o arquivo com segurança.', 'ok');
-}
-
-function importarDados(event) {
-  const file = event.target.files[0];
-  if (!file) return;
-  const reader = new FileReader();
-  reader.onload = function(e) {
-    try {
-      const dados = JSON.parse(e.target.result);
-      if (!dados.clientes && !dados.funcionarios) throw new Error('Formato inválido');
-      const qtdCli = (dados.clientes || []).length;
-      const qtdFunc = (dados.funcionarios || []).length;
-      if (!confirm(`Importar backup com ${qtdCli} cliente(s) e ${qtdFunc} funcionário(s)?\n\nIsso SUBSTITUIRÁ os dados atuais.`)) {
-        event.target.value = '';
-        return;
-      }
-      clientes = (dados.clientes || []).map(c => ({
-        id: c.id || 'c' + Date.now() + Math.random().toString(36).slice(2, 7),
-        nome: c.nome || '', cnpj: c.cnpj || '', endereco: c.endereco || '',
-        site: c.site || '', servicos: c.servicos || ''
-      })).slice(0, LIM_CLI);
-      funcionarios = (dados.funcionarios || []).map(f => ({
-        id: f.id || 'f' + Date.now() + Math.random().toString(36).slice(2, 7),
-        nome: f.nome || '', cargo: f.cargo || '', cpf: f.cpf || '', telefone: f.telefone || ''
-      })).slice(0, LIM_FUNC);
-      persistir();
-      renderClientes();
-      renderFuncionarios();
-      mostrarMsg($('msgBackup'), `✅ Backup importado: ${clientes.length} cliente(s) e ${funcionarios.length} funcionário(s).`, 'ok');
-    } catch(err) {
-      mostrarMsg($('msgBackup'), '❌ Arquivo inválido. Selecione um backup JSON gerado pelo sistema.', 'err');
+  function renderClientes() {
+    const tbody = $('tblCli').querySelector('tbody');
+    tbody.innerHTML = '';
+    if (clientes.length === 0) {
+      tbody.innerHTML = '<tr><td colspan="6" class="empty">Nenhum cliente cadastrado ainda.</td></tr>';
+    } else {
+      clientes.forEach((c, i) => {
+        tbody.innerHTML += `<tr>
+          <td>${i+1}</td><td>${esc(c.nome)}</td><td>${esc(c.cnpj)}</td>
+          <td>${esc(c.endereco)}</td><td>${esc(c.site || '-')}</td>
+          <td><button class="btn-del" onclick="removerCliente(${i})">X</button></td>
+        </tr>`;
+      });
     }
-    event.target.value = '';
-  };
-  reader.readAsText(file);
-}
+    $('cntCli').textContent = clientes.length + ' / ' + LIM_CLI;
+    $('btnCli').disabled = clientes.length >= LIM_CLI;
+  }
 
-function limparTudo() {
-  if (!confirm('⚠️ ATENÇÃO!\n\nIsso vai APAGAR TODOS os clientes e funcionários cadastrados.\n\nTem certeza?')) return;
-  if (!confirm('Confirma novamente? Esta ação NÃO pode ser desfeita.')) return;
-  clientes = [];
-  funcionarios = [];
-  persistir();
+  function renderFuncionarios() {
+    const tbody = $('tblFunc').querySelector('tbody');
+    tbody.innerHTML = '';
+    if (funcionarios.length === 0) {
+      tbody.innerHTML = '<tr><td colspan="6" class="empty">Nenhum funcionário cadastrado ainda.</td></tr>';
+    } else {
+      funcionarios.forEach((f, i) => {
+        tbody.innerHTML += `<tr>
+          <td>${i+1}</td><td>${esc(f.nome)}</td><td>${esc(f.cargo)}</td>
+          <td>${esc(f.cpf)}</td><td>${esc(f.telefone || '-')}</td>
+          <td><button class="btn-del" onclick="removerFuncionario(${i})">X</button></td>
+        </tr>`;
+      });
+    }
+    $('cntFunc').textContent = funcionarios.length + ' / ' + LIM_FUNC;
+    $('btnFunc').disabled = funcionarios.length >= LIM_FUNC;
+  }
+
+  function esc(s) { return String(s).replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m])); }
+
+  $('formCli').addEventListener('submit', e => {
+    e.preventDefault();
+    if (clientes.length >= LIM_CLI) { mostrarMsg($('msgCli'), 'Limite de 100 clientes atingido!', 'err'); return; }
+    const nome = $('cliNome').value.trim();
+    const cnpj = $('cliCnpj').value.trim();
+    const endereco = $('cliEnd').value.trim();
+    const site = $('cliSite').value.trim();
+    if (!nome || !cnpj || !endereco) { mostrarMsg($('msgCli'), 'Preencha todos os campos obrigatórios.', 'err'); return; }
+    clientes.push({ nome, cnpj, endereco, site });
+    salvar(); renderClientes();
+    $('formCli').reset();
+    mostrarMsg($('msgCli'), '✅ Cliente cadastrado com sucesso!', 'ok');
+  });
+
+  $('formFunc').addEventListener('submit', e => {
+    e.preventDefault();
+    if (funcionarios.length >= LIM_FUNC) { mostrarMsg($('msgFunc'), 'Limite de 10 funcionários atingido!', 'err'); return; }
+    const nome = $('funcNome').value.trim();
+    const cargo = $('funcCargo').value.trim();
+    const cpf = $('funcCpf').value.trim();
+    const telefone = $('funcTel').value.trim();
+    if (!nome || !cargo || !cpf) { mostrarMsg($('msgFunc'), 'Preencha todos os campos obrigatórios.', 'err'); return; }
+    funcionarios.push({ nome, cargo, cpf, telefone });
+    salvar(); renderFuncionarios();
+    $('formFunc').reset();
+    mostrarMsg($('msgFunc'), '✅ Funcionário cadastrado com sucesso!', 'ok');
+  });
+
+  function removerCliente(i) {
+    if (confirm('Remover este cliente?')) { clientes.splice(i,1); salvar(); renderClientes(); }
+  }
+  function removerFuncionario(i) {
+    if (confirm('Remover este funcionário?')) { funcionarios.splice(i,1); salvar(); renderFuncionarios(); }
+  }
+
+  function exportarDados() {
+    const dados = { empresa: 'TV Vale na Rede', clientes, funcionarios, exportadoEm: new Date().toLocaleString('pt-BR') };
+    const blob = new Blob([JSON.stringify(dados, null, 2)], { type: 'application/json' });
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = 'tv_vale_na_rede_dados.json';
+    a.click();
+  }
+
+  function limparTudo() {
+    if (confirm('Tem certeza que deseja APAGAR todos os cadastros? Esta ação não pode ser desfeita.')) {
+      clientes = []; funcionarios = []; salvar();
+      renderClientes(); renderFuncionarios();
+    }
+  }
+
   renderClientes();
   renderFuncionarios();
-  mostrarMsg($('msgBackup'), '🗑️ Todos os cadastros foram apagados.', 'ok');
-}
-
-/* ========= RELATÓRIO / WHATSAPP ========= */
-function gerarRelatorio() {
-  let t = '📺 *TVVALENAREDE* — Relatório de Cadastros\n';
-  t += '📅 Gerado em: ' + new Date().toLocaleString('pt-BR') + '\n';
-  t += '━━━━━━━━━━━━━━━━━━━━━━\n\n';
-
-  t += `🏪 *CLIENTES (${clientes.length}/100)*\n`;
-  t += '━━━━━━━━━━━━━━━━━━━━━━\n';
-  if (clientes.length === 0) {
-    t += '(nenhum cliente cadastrado)\n';
-  } else {
-    clientes.forEach((c, i) => {
-      t += `\n*${i + 1}. ${c.nome}*\n`;
-      t += `   • CNPJ: ${c.cnpj}\n`;
-      t += `   • Endereço: ${c.endereco}\n`;
-      if (c.site) t += `   • Site: ${c.site}\n`;
-      if (c.servicos && c.servicos.trim()) {
-        t += `   • Serviços que a TVVALENAREDE vai prestar:\n`;
-        c.servicos.split('\n').forEach(linha => {
-          if (linha.trim()) t += `      ${linha}\n`;
-        });
-      } else {
-        t += `   • Serviços: (não cadastrados)\n`;
-      }
-    });
-  }
-
-  t += `\n👤 *FUNCIONÁRIOS (${funcionarios.length}/30)*\n`;
-  t += '━━━━━━━━━━━━━━━━━━━━━━\n';
-  if (funcionarios.length === 0) {
-    t += '(nenhum funcionário cadastrado)\n';
-  } else {
-    funcionarios.forEach((f, i) => {
-      t += `\n*${i + 1}. ${f.nome}*\n`;
-      t += `   • Cargo: ${f.cargo}\n`;
-      t += `   • CPF/Matrícula: ${f.cpf}\n`;
-      if (f.telefone) t += `   • Telefone: ${f.telefone}\n`;
-    });
-  }
-
-  t += '\n━━━━━━━━━━━━━━━━━━━━━━\n';
-  t += '✅ Fim do relatório TVVALENAREDE';
-  return t;
-}
-
-function baixarRelatorioTxt(texto) {
-  const blob = new Blob([texto], { type: 'text/plain;charset=utf-8' });
-  const a = document.createElement('a');
-  a.href = URL.createObjectURL(blob);
-  a.download = 'tvvalenarede_relatorio_' + new Date().toISOString().slice(0, 10) + '.txt';
-  a.click();
-  URL.revokeObjectURL(a.href);
-}
-
-function enviarWhatsApp() {
-  if (clientes.length === 0 && funcionarios.length === 0) {
-    mostrarMsg($('msgBackup'), '⚠️ Nenhum cadastro para enviar.', 'err');
-    return;
-  }
-
-  persistir(); // garante que está tudo salvo
-  const relatorio = gerarRelatorio();
-
-  // Tenta copiar para a área de transferência
-  const copiar = (navigator.clipboard && navigator.clipboard.writeText)
-    ? navigator.clipboard.writeText(relatorio)
-    : Promise.reject('sem clipboard');
-
-  copiar.then(() => {
-    // Abre WhatsApp com mensagem curta pedindo para colar
-    const msg = '📋 *TVVALENAREDE* — Relatório gerado!\n\nCole aqui (Ctrl+V) o relatório completo que foi copiado.\n\nSe não colar, use o arquivo .txt que também foi baixado.';
-    const url = 'https://wa.me/' + WHATSAPP_NUM + '?text=' + encodeURIComponent(msg);
-    window.open(url, '_blank');
-
-    // Também baixa como .txt por segurança
-    baixarRelatorioTxt(relatorio);
-
-    mostrarMsg($('msgBackup'), '✅ Relatório copiado + arquivo .txt baixado! WhatsApp abrindo...', 'ok');
-  }).catch(() => {
-    // Fallback: baixa o arquivo e abre WhatsApp com aviso
-    baixarRelatorioTxt(relatorio);
-    const msg = '📋 *TVVALENAREDE* — Relatório gerado!\n\nO relatório completo foi baixado como arquivo .txt. Por favor, anexe-o aqui.';
-    const url = 'https://wa.me/' + WHATSAPP_NUM + '?text=' + encodeURIComponent(msg);
-    window.open(url, '_blank');
-    mostrarMsg($('msgBackup'), '✅ Relatório baixado como .txt! Anexe-o no WhatsApp.', 'ok');
-  });
-}
-
-/* ========= INICIALIZAÇÃO ========= */
-$('ano').textContent = new Date().getFullYear();
-if (sessionStorage.getItem('tvvn_logado') === '1') {
-  mostrarApp();
-} else {
-  setTimeout(() => $('senhaInput').focus(), 200);
-}
 </script>
 </body>
 </html>
