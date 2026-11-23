@@ -3,332 +3,692 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>TV Vale na Rede - Cadastro de Clientes</title>
+<title>Supermercados — TV Vale na Rede</title>
 <style>
-  * { margin:0; padding:0; box-sizing:border-box; font-family: 'Segoe UI', Arial, sans-serif; }
-  body {
-    background: linear-gradient(135deg, #0b1e3a, #16365c);
-    min-height:100vh; color:#fff; padding:20px;
+  :root{
+    --azul:#0d47a1;
+    --azul-esc:#093674;
+    --vermelho:#e53935;
+    --verde:#2e7d32;
+    --cinza:#64748b;
+    --fundo:#f1f5f9;
+    --card:#ffffff;
+    --borda:#e2e8f0;
+    --texto:#1e293b;
+    --sombra:0 2px 8px rgba(15,23,42,.08);
   }
-  h1 { text-align:center; margin-bottom:20px; font-size:1.8rem; color:#ffd700; text-shadow:2px 2px 4px #000; }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{
+    font-family:'Segoe UI',system-ui,-apple-system,Roboto,Arial,sans-serif;
+    background:var(--fundo);color:var(--texto);min-height:100vh;
+  }
+  header{
+    background:linear-gradient(135deg,var(--azul),var(--azul-esc));
+    color:#fff;padding:22px 20px;box-shadow:0 2px 12px rgba(0,0,0,.18);
+  }
+  .header-inner{max-width:1200px;margin:0 auto;display:flex;flex-wrap:wrap;
+    align-items:center;justify-content:space-between;gap:14px}
+  .logo{display:flex;align-items:center;gap:12px}
+  .logo-badge{
+    background:var(--vermelho);color:#fff;font-weight:800;font-size:15px;
+    padding:9px 12px;border-radius:10px;letter-spacing:.5px;white-space:nowrap;
+  }
+  h1{font-size:20px;font-weight:700;line-height:1.2}
+  .sub{font-size:13px;opacity:.85;margin-top:2px}
+  .contador{
+    background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.3);
+    padding:8px 14px;border-radius:10px;font-size:13px;font-weight:600;white-space:nowrap;
+  }
+  main{max-width:1200px;margin:0 auto;padding:20px}
 
-  /* Tela de login */
-  #loginScreen {
-    max-width:400px; margin:100px auto; background:#1e4b7a; padding:40px 30px;
-    border-radius:15px; box-shadow:0 10px 30px rgba(0,0,0,.6); text-align:center;
+  .barra{
+    display:flex;flex-wrap:wrap;gap:10px;margin-bottom:18px;align-items:center;
   }
-  #loginScreen h2 { margin-bottom:20px; color:#ffd700; }
-  #loginScreen input {
-    width:100%; padding:12px; margin-bottom:15px; border:none; border-radius:8px;
-    font-size:1rem; text-align:center;
+  .busca{flex:1 1 260px;position:relative}
+  .busca input{
+    width:100%;padding:12px 14px 12px 40px;border:1px solid var(--borda);
+    border-radius:10px;font-size:14px;background:#fff;outline:none;transition:.2s;
   }
-  #loginScreen button {
-    width:100%; padding:12px; background:#ffd700; color:#0b1e3a; border:none;
-    border-radius:8px; font-weight:bold; font-size:1rem; cursor:pointer;
-    transition:.3s;
+  .busca input:focus{border-color:var(--azul);box-shadow:0 0 0 3px rgba(13,71,161,.12)}
+  .busca::before{
+    content:"🔍";position:absolute;left:13px;top:50%;transform:translateY(-50%);
+    font-size:14px;opacity:.55;
   }
-  #loginScreen button:hover { background:#ffed4a; transform:scale(1.03); }
+  button{font-family:inherit;cursor:pointer;border:none;transition:.18s}
+  .btn{
+    padding:12px 18px;border-radius:10px;font-size:14px;font-weight:600;
+    display:inline-flex;align-items:center;gap:7px;white-space:nowrap;
+  }
+  .btn-primario{background:var(--azul);color:#fff}
+  .btn-primario:hover{background:var(--azul-esc)}
+  .btn-sec{background:#fff;color:var(--texto);border:1px solid var(--borda)}
+  .btn-sec:hover{background:#f8fafc;border-color:#cbd5e1}
+  .btn:disabled{opacity:.5;cursor:not-allowed}
 
-  /* App */
-  #app { display:none; max-width:1200px; margin:0 auto; }
-
-  .form-box {
-    background:#1e4b7a; padding:20px; border-radius:12px; margin-bottom:20px;
-    box-shadow:0 5px 20px rgba(0,0,0,.4);
+  .grid{
+    display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:16px;
   }
-  .form-box h3 { margin-bottom:15px; color:#ffd700; }
-  .grid {
-    display:grid; grid-template-columns: repeat(auto-fit, minmax(220px,1fr));
-    gap:12px;
+  .card{
+    background:var(--card);border-radius:14px;padding:16px;box-shadow:var(--sombra);
+    border:1px solid var(--borda);border-left:5px solid var(--azul);
+    display:flex;flex-direction:column;gap:10px;transition:.18s;
   }
-  .grid input, .grid select, .grid textarea {
-    padding:10px; border:none; border-radius:8px; font-size:.95rem; width:100%;
-    font-family: inherit;
+  .card:hover{transform:translateY(-2px);box-shadow:0 8px 20px rgba(15,23,42,.12)}
+  .card h3{font-size:16px;font-weight:700;line-height:1.3;color:var(--azul-esc)}
+  .tag{
+    display:inline-block;font-size:11px;font-weight:700;text-transform:uppercase;
+    letter-spacing:.4px;padding:3px 8px;border-radius:6px;
+    background:#e8f0fe;color:var(--azul);width:fit-content;
   }
-  .grid textarea { resize: vertical; min-height:60px; grid-column: 1 / -1; }
-
-  .btn {
-    padding:11px 20px; border:none; border-radius:8px; font-weight:bold;
-    cursor:pointer; font-size:.95rem; transition:.25s; margin-top:12px;
+  .tag.aviso{background:#fff4e5;color:#b26a00}
+  .linha{font-size:13.5px;line-height:1.5;color:#334155;display:flex;gap:7px}
+  .linha .ico{flex:0 0 16px;opacity:.75}
+  .linha.vazio{color:#94a3b8;font-style:italic}
+  .obs{font-size:12.5px;color:var(--cinza);background:#f8fafc;padding:8px 10px;
+    border-radius:8px;border:1px dashed var(--borda)}
+  .acoes{display:flex;gap:8px;margin-top:auto;padding-top:8px;border-top:1px solid var(--borda);flex-wrap:wrap}
+  .acoes button{
+    flex:1 1 auto;padding:8px 10px;border-radius:8px;font-size:12.5px;font-weight:600;
+    background:#f1f5f9;color:#334155;
   }
-  .btn-add { background:#28a745; color:#fff; }
-  .btn-add:hover { background:#34c759; }
-  .btn-backup { background:#007bff; color:#fff; }
-  .btn-backup:hover { background:#3395ff; }
-  .btn-save { background:#ffc107; color:#000; }
-  .btn-save:hover { background:#ffd54a; }
-  .btn-exit { background:#dc3545; color:#fff; }
-  .btn-exit:hover { background:#ff4d5e; }
-  .btn-del { background:#dc3545; color:#fff; padding:6px 10px; font-size:.8rem; }
+  .acoes button:hover{background:#e2e8f0}
+  .acoes .zap{background:#e7f8ee;color:var(--verde)}
+  .acoes .zap:hover{background:#d3f2e1}
+  .acoes .excluir{background:#fdeaea;color:var(--vermelho)}
+  .acoes .excluir:hover{background:#fbd5d5}
 
-  .actions { display:flex; flex-wrap:wrap; gap:10px; margin-bottom:20px; }
+  .vaga{
+    background:transparent;border:2px dashed #cbd5e1;border-radius:14px;
+    display:flex;flex-direction:column;align-items:center;justify-content:center;
+    gap:8px;padding:26px 16px;color:#94a3b8;min-height:170px;cursor:pointer;
+    transition:.18s;font-size:13.5px;font-weight:600;
+  }
+  .vaga:hover{border-color:var(--azul);color:var(--azul);background:#f8fbff}
+  .vaga .mais{font-size:30px;line-height:1;font-weight:300}
 
-  .search-box input {
-    width:100%; padding:12px; border:none; border-radius:8px; margin-bottom:15px;
-    font-size:1rem;
+  .vazio-msg{
+    grid-column:1/-1;text-align:center;padding:40px 20px;color:var(--cinza);font-size:15px;
   }
 
-  .table-wrap { overflow-x:auto; border-radius:10px; }
-  table { width:100%; border-collapse:collapse; background:#fff; color:#000; min-width:900px; }
-  th, td { padding:10px; text-align:left; font-size:.85rem; border-bottom:1px solid #ddd; vertical-align:top; }
-  th { background:#0b1e3a; color:#ffd700; white-space:nowrap; }
-  tr:hover td { background:#f1f8ff; }
+  /* MODAL */
+  .overlay{
+    position:fixed;inset:0;background:rgba(15,23,42,.55);display:none;
+    align-items:center;justify-content:center;padding:16px;z-index:100;backdrop-filter:blur(2px);
+  }
+  .overlay.aberto{display:flex}
+  .modal{
+    background:#fff;border-radius:16px;width:100%;max-width:560px;max-height:92vh;
+    overflow-y:auto;box-shadow:0 20px 50px rgba(0,0,0,.3);animation:entra .18s ease;
+  }
+  @keyframes entra{from{transform:translateY(14px);opacity:0}to{transform:none;opacity:1}}
+  .modal-topo{
+    padding:18px 20px;border-bottom:1px solid var(--borda);
+    display:flex;justify-content:space-between;align-items:center;
+    position:sticky;top:0;background:#fff;border-radius:16px 16px 0 0;z-index:2;
+  }
+  .modal-topo h2{font-size:17px;color:var(--azul-esc)}
+  .fechar{background:none;font-size:22px;color:var(--cinza);line-height:1;padding:4px 8px;border-radius:6px}
+  .fechar:hover{background:#f1f5f9;color:var(--vermelho)}
+  .modal-corpo{padding:18px 20px;display:grid;grid-template-columns:1fr 1fr;gap:14px}
+  .campo{display:flex;flex-direction:column;gap:5px}
+  .campo.full{grid-column:1/-1}
+  .campo label{font-size:12.5px;font-weight:700;color:#475569;text-transform:uppercase;letter-spacing:.3px}
+  .campo label .req{color:var(--vermelho)}
+  .campo input,.campo textarea{
+    padding:11px 12px;border:1px solid var(--borda);border-radius:9px;
+    font-size:14px;font-family:inherit;outline:none;transition:.18s;background:#fcfdff;
+  }
+  .campo input:focus,.campo textarea:focus{
+    border-color:var(--azul);box-shadow:0 0 0 3px rgba(13,71,161,.12);background:#fff;
+  }
+  .campo textarea{resize:vertical;min-height:70px}
+  .modal-rodape{
+    padding:16px 20px;border-top:1px solid var(--borda);display:flex;gap:10px;
+    justify-content:flex-end;position:sticky;bottom:0;background:#fff;
+    border-radius:0 0 16px 16px;
+  }
+  .modal-rodape .btn{min-width:120px;justify-content:center}
 
-  .empty { text-align:center; padding:30px; color:#ffd700; font-weight:bold; }
-  .counter { text-align:right; margin-bottom:10px; color:#ffd700; font-weight:bold; }
+  .toast{
+    position:fixed;bottom:22px;left:50%;transform:translateX(-50%) translateY(90px);
+    background:#0f172a;color:#fff;padding:13px 22px;border-radius:10px;
+    font-size:14px;font-weight:600;box-shadow:0 8px 24px rgba(0,0,0,.3);
+    opacity:0;transition:.28s;z-index:200;pointer-events:none;max-width:90vw;text-align:center;
+  }
+  .toast.mostra{transform:translateX(-50%) translateY(0);opacity:1}
+  .toast.erro{background:var(--vermelho)}
+
+  footer{
+    max-width:1200px;margin:0 auto;padding:16px 20px 40px;text-align:center;
+    font-size:12.5px;color:#94a3b8;line-height:1.7;
+  }
+
+  @media(max-width:600px){
+    h1{font-size:17px}
+    .modal-corpo{grid-template-columns:1fr}
+    .grid{grid-template-columns:1fr}
+    .btn{padding:11px 14px;font-size:13px}
+  }
 </style>
 </head>
 <body>
 
-<h1>📺 TV Vale na Rede</h1>
-
-<!-- LOGIN -->
-<div id="loginScreen">
-  <h2>🔒 Acesso Restrito</h2>
-  <input type="password" id="senhaInput" placeholder="Digite a senha">
-  <button onclick="entrar()">Entrar</button>
-  <p id="loginMsg" style="margin-top:15px;color:#ff6b6b;"></p>
-</div>
-
-<!-- APP -->
-<div id="app">
-  <div class="form-box">
-    <h3>➕ Cadastrar Cliente</h3>
-    <div class="grid">
-      <input type="text" id="nome" placeholder="Nome do Cliente *">
-      <input type="text" id="telefone" placeholder="Telefone">
-      <input type="text" id="cidade" placeholder="Cidade">
-      <input type="text" id="cnpj" placeholder="CNPJ">
-      <input type="text" id="supermercado" placeholder="Nome do Supermercado">
-      <input type="text" id="endSupermercado" placeholder="End. do Supermercado">
-      <input type="text" id="plano" placeholder="Plano / Serviço">
-      <input type="date" id="dataCad">
-      <textarea id="trabalho" placeholder="Trabalho a ser feito"></textarea>
+<header>
+  <div class="header-inner">
+    <div class="logo">
+      <span class="logo-badge">TV VALE</span>
+      <div>
+        <h1>Supermercados Clientes</h1>
+        <div class="sub">TV Vale na Rede — Cadastro de Clientes</div>
+      </div>
     </div>
-    <button class="btn btn-add" onclick="cadastrar()">Cadastrar Cliente</button>
-    <span id="msgCad" style="margin-left:15px;font-weight:bold;"></span>
+    <div class="contador" id="contador">0 / 25 cadastrados</div>
+  </div>
+</header>
+
+<main>
+  <div class="barra">
+    <div class="busca">
+      <input type="text" id="busca" placeholder="Buscar por nome, bairro, telefone...">
+    </div>
+    <button class="btn btn-primario" id="btnNovo">➕ Novo Cliente</button>
+    <button class="btn btn-sec" id="btnExportar" title="Baixar backup dos cadastros">⬇️ Backup</button>
+    <button class="btn btn-sec" id="btnImportar" title="Restaurar backup">⬆️ Restaurar</button>
+    <input type="file" id="fileImport" accept="application/json" hidden>
   </div>
 
-  <div class="actions">
-    <button class="btn btn-backup" onclick="backup()">💾 Fazer Backup</button>
-    <button class="btn btn-save" onclick="salvarDados()">✅ Salvar Dados</button>
-    <button class="btn btn-exit" onclick="sair()">🚪 Sair do Site</button>
-  </div>
+  <div class="grid" id="grid"></div>
+</main>
 
-  <div class="search-box">
-    <input type="text" id="busca" placeholder="🔍 Buscar por nome, supermercado, CNPJ..." oninput="renderizar()">
-  </div>
+<footer>
+  Os dados ficam salvos automaticamente neste navegador (localStorage).<br>
+  Faça backup periódico no botão <strong>⬇️ Backup</strong> para não perder os cadastros ao limpar o navegador.
+</footer>
 
-  <div class="counter" id="contador"></div>
-
-  <div class="table-wrap">
-    <table>
-      <thead>
-        <tr>
-          <th>#</th>
-          <th>Cliente</th>
-          <th>Telefone</th>
-          <th>Cidade</th>
-          <th>CNPJ</th>
-          <th>Supermercado</th>
-          <th>End. Supermercado</th>
-          <th>Plano</th>
-          <th>Trabalho a ser feito</th>
-          <th>Data</th>
-          <th>Ação</th>
-        </tr>
-      </thead>
-      <tbody id="tabela"></tbody>
-    </table>
+<!-- MODAL -->
+<div class="overlay" id="overlay">
+  <div class="modal">
+    <div class="modal-topo">
+      <h2 id="modalTitulo">Novo Cliente</h2>
+      <button class="fechar" id="btnFechar" aria-label="Fechar">✕</button>
+    </div>
+    <div class="modal-corpo">
+      <div class="campo full">
+        <label>Nome do supermercado <span class="req">*</span></label>
+        <input type="text" id="f-nome" placeholder="Ex.: Supermercado Semar" maxlength="80">
+      </div>
+      <div class="campo">
+        <label>Bairro</label>
+        <input type="text" id="f-bairro" placeholder="Ex.: Flor do Vale" maxlength="60">
+      </div>
+      <div class="campo">
+        <label>Cidade</label>
+        <input type="text" id="f-cidade" placeholder="Ex.: Taubaté" maxlength="60">
+      </div>
+      <div class="campo full">
+        <label>Endereço completo (rua / nº)</label>
+        <input type="text" id="f-endereco" placeholder="Ex.: Rua das Acácias, 120" maxlength="120">
+      </div>
+      <div class="campo">
+        <label>Telefone / WhatsApp</label>
+        <input type="tel" id="f-telefone" placeholder="(12) 99999-9999" maxlength="20">
+      </div>
+      <div class="campo">
+        <label>Pessoa de contato</label>
+        <input type="text" id="f-contato" placeholder="Ex.: Sr. João (gerente)" maxlength="60">
+      </div>
+      <div class="campo full">
+        <label>E-mail</label>
+        <input type="email" id="f-email" placeholder="contato@supermercado.com.br" maxlength="80">
+      </div>
+      <div class="campo full">
+        <label>Observações</label>
+        <textarea id="f-obs" placeholder="Anotações, dia de visita, tipo de contato..." maxlength="400"></textarea>
+      </div>
+    </div>
+    <div class="modal-rodape">
+      <button class="btn btn-sec" id="btnCancelar">Cancelar</button>
+      <button class="btn btn-primario" id="btnSalvar">💾 Salvar</button>
+    </div>
   </div>
-  <div id="vazio" class="empty" style="display:none;">Nenhum cliente cadastrado ainda.</div>
 </div>
+
+<div class="toast" id="toast"></div>
 
 <script>
-/* ===============================
+/* =========================================================
    CONFIGURAÇÃO
-=============================== */
-const SENHA = "tvvalenarede20";
-const MAX_CLIENTES = 100;
-const STORAGE_KEY = "tvValeClientes";
+   ========================================================= */
+const STORAGE_KEY   = 'tvr_supermercados_v1';
+const LIMITE_TOTAL  = 25;   // 5 já cadastrados + 20 vagas
 
+/* =========================================================
+   CADASTROS PADRÃO (pré-carregados na primeira abertura)
+   ========================================================= */
+const PADRAO = [
+  {
+    id:'semar',
+    nome:'Supermercado Semar',
+    bairro:'Flor do Vale',
+    cidade:'Taubaté',
+    endereco:'Bairro Flor do Vale',
+    telefone:'',
+    contato:'',
+    email:'',
+    obs:'Cliente TV Vale na Rede'
+  },
+  {
+    id:'cenourao',
+    nome:'Supermercado Cenourão',
+    bairro:'Terra Nova',
+    cidade:'Taubaté',
+    endereco:'Bairro Terra Nova',
+    telefone:'',
+    contato:'',
+    email:'',
+    obs:'Cliente TV Vale na Rede'
+  },
+  {
+    id:'itambe',
+    nome:'Supermercado Itambé',
+    bairro:'Baronesa',
+    cidade:'Taubaté',
+    endereco:'Bairro Baronesa',
+    telefone:'',
+    contato:'',
+    email:'',
+    obs:'Cliente TV Vale na Rede'
+  },
+  {
+    id:'fantastico',
+    nome:'Supermercado Fantástico',
+    bairro:'',
+    cidade:'Taubaté',
+    endereco:'',
+    telefone:'',
+    contato:'',
+    email:'',
+    obs:'Cliente TV Vale na Rede'
+  },
+  {
+    id:'areao',
+    nome:'Supermercado do Areão',
+    bairro:'Areão',
+    cidade:'Taubaté',
+    endereco:'Bairro Areão',
+    telefone:'',
+    contato:'',
+    email:'',
+    obs:'Cliente TV Vale na Rede'
+  }
+];
+
+/* =========================================================
+   ESTADO
+   ========================================================= */
 let clientes = [];
+let editandoId = null;
 
-/* ===============================
-   LOGIN
-=============================== */
-function entrar() {
-  const senha = document.getElementById("senhaInput").value;
-  const msg = document.getElementById("loginMsg");
-  if (senha === SENHA) {
-    document.getElementById("loginScreen").style.display = "none";
-    document.getElementById("app").style.display = "block";
-    carregarDados();
-  } else {
-    msg.textContent = "❌ Senha incorreta. Tente novamente.";
-    document.getElementById("senhaInput").value = "";
-  }
-}
-document.getElementById("senhaInput").addEventListener("keypress", e => {
-  if (e.key === "Enter") entrar();
-});
-
-/* ===============================
-   LOCALSTORAGE
-=============================== */
-function carregarDados() {
-  const dados = localStorage.getItem(STORAGE_KEY);
-  if (dados) {
-    try { clientes = JSON.parse(dados); } catch(e) { clientes = []; }
-  }
-  renderizar();
+/* =========================================================
+   UTILITÁRIOS
+   ========================================================= */
+function novoId(){
+  return 'c' + Date.now().toString(36) + Math.random().toString(36).slice(2,7);
 }
 
-function salvarDados(silencioso = false) {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(clientes));
-  if (!silencioso) mostrarMsgCad("💾 Dados salvos com sucesso!", "ok");
+function esc(str){
+  return String(str == null ? '' : str)
+    .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+    .replace(/"/g,'&quot;').replace(/'/g,'&#39;');
 }
 
-/* ===============================
-   CADASTRO
-=============================== */
-function cadastrar() {
-  const nome = document.getElementById("nome").value.trim();
-  const telefone = document.getElementById("telefone").value.trim();
-  const cidade = document.getElementById("cidade").value.trim();
-  const cnpj = document.getElementById("cnpj").value.trim();
-  const supermercado = document.getElementById("supermercado").value.trim();
-  const endSupermercado = document.getElementById("endSupermercado").value.trim();
-  const plano = document.getElementById("plano").value.trim();
-  const trabalho = document.getElementById("trabalho").value.trim();
-  const dataCad = document.getElementById("dataCad").value || new Date().toISOString().slice(0,10);
-
-  if (!nome && !supermercado) {
-    mostrarMsgCad("⚠️ Informe o nome do cliente ou do supermercado.", "err");
-    return;
-  }
-  if (clientes.length >= MAX_CLIENTES) {
-    mostrarMsgCad("⚠️ Limite de 100 clientes atingido!", "err");
-    return;
-  }
-
-  clientes.push({
-    nome, telefone, cidade, cnpj,
-    supermercado, endSupermercado, plano, trabalho, dataCad
-  });
-  salvarDados(true);
-  limparForm();
-  renderizar();
-  mostrarMsgCad("✅ Cliente cadastrado com sucesso!", "ok");
+function soDigitos(t){
+  return String(t || '').replace(/\D/g,'');
 }
 
-function limparForm() {
-  ["nome","telefone","cidade","cnpj","supermercado","endSupermercado","plano","trabalho","dataCad"]
-    .forEach(id => document.getElementById(id).value = "");
+let toastTimer;
+function toast(msg, erro){
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.classList.toggle('erro', !!erro);
+  el.classList.add('mostra');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(()=> el.classList.remove('mostra'), 2600);
 }
 
-function mostrarMsgCad(texto, tipo) {
-  const el = document.getElementById("msgCad");
-  el.textContent = texto;
-  el.style.color = tipo === "ok" ? "#7CFC8A" : "#ff6b6b";
-  setTimeout(() => { el.textContent = ""; }, 3000);
-}
-
-/* ===============================
-   RENDERIZAÇÃO
-=============================== */
-function renderizar() {
-  const busca = document.getElementById("busca").value.toLowerCase();
-  const tbody = document.getElementById("tabela");
-  const vazio = document.getElementById("vazio");
-  tbody.innerHTML = "";
-
-  const filtrados = clientes.filter(c =>
-    (c.nome || "").toLowerCase().includes(busca) ||
-    (c.supermercado || "").toLowerCase().includes(busca) ||
-    (c.cnpj || "").toLowerCase().includes(busca) ||
-    (c.cidade || "").toLowerCase().includes(busca)
-  );
-
-  if (filtrados.length === 0) {
-    vazio.style.display = "block";
-    vazio.textContent = busca ? "Nenhum cliente encontrado." : "Nenhum cliente cadastrado ainda.";
-  } else {
-    vazio.style.display = "none";
-    filtrados.forEach((c) => {
-      const realIndex = clientes.indexOf(c);
-      const tr = document.createElement("tr");
-      tr.innerHTML = `
-        <td>${realIndex + 1}</td>
-        <td>${escapeHtml(c.nome) || "-"}</td>
-        <td>${escapeHtml(c.telefone) || "-"}</td>
-        <td>${escapeHtml(c.cidade) || "-"}</td>
-        <td>${escapeHtml(c.cnpj) || "-"}</td>
-        <td>${escapeHtml(c.supermercado) || "-"}</td>
-        <td>${escapeHtml(c.endSupermercado) || "-"}</td>
-        <td>${escapeHtml(c.plano) || "-"}</td>
-        <td>${escapeHtml(c.trabalho) || "-"}</td>
-        <td>${c.dataCad}</td>
-        <td><button class="btn btn-del" onclick="excluir(${realIndex})">Excluir</button></td>
-      `;
-      tbody.appendChild(tr);
-    });
-  }
-
-  document.getElementById("contador").textContent =
-    `Clientes cadastrados: ${clientes.length} / ${MAX_CLIENTES}`;
-}
-
-function escapeHtml(txt) {
-  if (!txt) return "";
-  return txt.replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
-}
-
-function excluir(index) {
-  if (confirm("Deseja realmente excluir este cliente?")) {
-    clientes.splice(index, 1);
-    salvarDados(true);
-    renderizar();
-  }
-}
-
-/* ===============================
-   BACKUP (Download JSON)
-=============================== */
-function backup() {
-  if (clientes.length === 0) {
-    alert("Não há clientes para fazer backup.");
-    return;
-  }
-  const data = new Date().toISOString().slice(0,10);
-  const blob = new Blob([JSON.stringify(clientes, null, 2)], { type: "application/json" });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement("a");
-  a.href = url;
-  a.download = `backup_tv_vale_rede_${data}.json`;
-  a.click();
-  URL.revokeObjectURL(url);
-}
-
-/* ===============================
-   SAIR (salva e retorna ao login)
-=============================== */
-function sair() {
-  salvarDados(true);
-  if (confirm("Dados salvos! Deseja realmente sair do site?")) {
-    document.getElementById("app").style.display = "none";
-    document.getElementById("loginScreen").style.display = "block";
-    document.getElementById("senhaInput").value = "";
-    document.getElementById("loginMsg").textContent = "";
-  }
-}
-
-/* Salva automaticamente ao fechar a aba */
-window.addEventListener("beforeunload", () => {
-  if (document.getElementById("app").style.display === "block") {
+/* =========================================================
+   PERSISTÊNCIA
+   ========================================================= */
+function salvar(){
+  try{
     localStorage.setItem(STORAGE_KEY, JSON.stringify(clientes));
+  }catch(e){
+    toast('Erro ao salvar no navegador!', true);
+    console.error(e);
+  }
+}
+
+function carregar(){
+  let carregado = false;
+  try{
+    const bruto = localStorage.getItem(STORAGE_KEY);
+    if(bruto){
+      const dados = JSON.parse(bruto);
+      if(Array.isArray(dados)){
+        clientes = dados;
+        carregado = true;
+      }
+    }
+  }catch(e){
+    console.warn('Falha ao ler armazenamento:', e);
+  }
+  if(!carregado){
+    clientes = JSON.parse(JSON.stringify(PADRAO));
+    salvar();
+  }
+}
+
+/* =========================================================
+   RENDERIZAÇÃO
+   ========================================================= */
+function render(){
+  const grid = document.getElementById('grid');
+  const termo = document.getElementById('busca').value.trim().toLowerCase();
+
+  const lista = clientes.filter(c => {
+    if(!termo) return true;
+    return [c.nome,c.bairro,c.cidade,c.endereco,c.telefone,c.contato,c.email,c.obs]
+      .join(' ').toLowerCase().includes(termo);
+  });
+
+  grid.innerHTML = '';
+
+  if(lista.length === 0){
+    grid.innerHTML = '<div class="vazio-msg">Nenhum cliente encontrado para esta busca.</div>';
+  }
+
+  lista.forEach(c => grid.appendChild(criarCard(c)));
+
+  // Vagas livres (só aparecem quando não há busca ativa)
+  if(!termo){
+    const vagas = Math.max(0, LIMITE_TOTAL - clientes.length);
+    for(let i = 0; i < vagas; i++){
+      const v = document.createElement('div');
+      v.className = 'vaga';
+      v.innerHTML = '<span class="mais">+</span><span>Vaga livre ' + (clientes.length + i + 1 - 5 > 0 ? '' : '') + '— cadastrar supermercado</span>';
+      v.addEventListener('click', abrirNovo);
+      grid.appendChild(v);
+    }
+  }
+
+  document.getElementById('contador').textContent =
+    clientes.length + ' / ' + LIMITE_TOTAL + ' cadastrados';
+
+  document.getElementById('btnNovo').disabled = clientes.length >= LIMITE_TOTAL;
+}
+
+function criarCard(c){
+  const div = document.createElement('div');
+  div.className = 'card';
+
+  const telDigitos = soDigitos(c.telefone);
+  const temTel = telDigitos.length >= 10;
+  const zapLink = temTel ? ('https://wa.me/55' + telDigitos) : '';
+
+  const local = [c.bairro, c.cidade].filter(Boolean).join(' — ');
+
+  div.innerHTML = `
+    <span class="tag">Cliente</span>
+    <h3>${esc(c.nome)}</h3>
+
+    <div class="linha ${local ? '' : 'vazio'}">
+      <span class="ico">📍</span>
+      <span>${local ? esc(local) : 'Bairro/cidade não informado'}</span>
+    </div>
+
+    <div class="linha ${c.endereco ? '' : 'vazio'}">
+      <span class="ico">🏠</span>
+      <span>${c.endereco ? esc(c.endereco) : 'Endereço não informado'}</span>
+    </div>
+
+    <div class="linha ${c.telefone ? '' : 'vazio'}">
+      <span class="ico">📞</span>
+      <span>${c.telefone ? esc(c.telefone) : 'Telefone não informado'}</span>
+    </div>
+
+    <div class="linha ${c.contato ? '' : 'vazio'}">
+      <span class="ico">👤</span>
+      <span>${c.contato ? esc(c.contato) : 'Contato não informado'}</span>
+    </div>
+
+    ${c.email ? `<div class="linha"><span class="ico">✉️</span><span>${esc(c.email)}</span></div>` : ''}
+    ${c.obs ? `<div class="obs">${esc(c.obs)}</div>` : ''}
+
+    <div class="acoes">
+      ${temTel ? `<button class="zap" data-acao="zap">💬 WhatsApp</button>` : ''}
+      <button data-acao="editar">✏️ Editar</button>
+      <button class="excluir" data-acao="excluir">🗑️ Excluir</button>
+    </div>
+  `;
+
+  div.querySelectorAll('button[data-acao]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const acao = btn.dataset.acao;
+      if(acao === 'editar') abrirEdicao(c.id);
+      else if(acao === 'excluir') excluir(c.id);
+      else if(acao === 'zap') window.open(zapLink, '_blank');
+    });
+  });
+
+  return div;
+}
+
+/* =========================================================
+   MODAL
+   ========================================================= */
+const overlay = document.getElementById('overlay');
+
+function limparForm(){
+  ['f-nome','f-bairro','f-cidade','f-endereco','f-telefone','f-contato','f-email','f-obs']
+    .forEach(id => document.getElementById(id).value = '');
+}
+
+function abrirNovo(){
+  if(clientes.length >= LIMITE_TOTAL){
+    toast('Limite de ' + LIMITE_TOTAL + ' supermercados atingido.', true);
+    return;
+  }
+  editandoId = null;
+  limparForm();
+  document.getElementById('modalTitulo').textContent = 'Novo Cliente';
+  overlay.classList.add('aberto');
+  setTimeout(()=> document.getElementById('f-nome').focus(), 60);
+}
+
+function abrirEdicao(id){
+  const c = clientes.find(x => x.id === id);
+  if(!c) return;
+  editandoId = id;
+  document.getElementById('modalTitulo').textContent = 'Editar Cliente';
+  document.getElementById('f-nome').value     = c.nome || '';
+  document.getElementById('f-bairro').value   = c.bairro || '';
+  document.getElementById('f-cidade').value   = c.cidade || '';
+  document.getElementById('f-endereco').value = c.endereco || '';
+  document.getElementById('f-telefone').value = c.telefone || '';
+  document.getElementById('f-contato').value  = c.contato || '';
+  document.getElementById('f-email').value    = c.email || '';
+  document.getElementById('f-obs').value      = c.obs || '';
+  overlay.classList.add('aberto');
+  setTimeout(()=> document.getElementById('f-nome').focus(), 60);
+}
+
+function fecharModal(){
+  overlay.classList.remove('aberto');
+  editandoId = null;
+}
+
+/* =========================================================
+   AÇÕES
+   ========================================================= */
+function salvarCliente(){
+  const nome = document.getElementById('f-nome').value.trim();
+
+  if(!nome){
+    toast('Informe o nome do supermercado!', true);
+    document.getElementById('f-nome').focus();
+    return;
+  }
+
+  // Nome duplicado (exceto o próprio em edição)
+  const duplicado = clientes.some(c =>
+    c.nome.trim().toLowerCase() === nome.toLowerCase() && c.id !== editandoId
+  );
+  if(duplicado){
+    toast('Já existe um cliente com esse nome.', true);
+    return;
+  }
+
+  const dados = {
+    nome,
+    bairro:   document.getElementById('f-bairro').value.trim(),
+    cidade:   document.getElementById('f-cidade').value.trim(),
+    endereco: document.getElementById('f-endereco').value.trim(),
+    telefone: document.getElementById('f-telefone').value.trim(),
+    contato:  document.getElementById('f-contato').value.trim(),
+    email:    document.getElementById('f-email').value.trim(),
+    obs:      document.getElementById('f-obs').value.trim()
+  };
+
+  if(editandoId){
+    const idx = clientes.findIndex(c => c.id === editandoId);
+    if(idx > -1) clientes[idx] = Object.assign({}, clientes[idx], dados);
+    toast('✅ Cadastro atualizado!');
+  }else{
+    if(clientes.length >= LIMITE_TOTAL){
+      toast('Limite de ' + LIMITE_TOTAL + ' atingido.', true);
+      return;
+    }
+    dados.id = novoId();
+    clientes.push(dados);
+    toast('✅ Cliente cadastrado!');
+  }
+
+  salvar();
+  fecharModal();
+  render();
+}
+
+function excluir(id){
+  const c = clientes.find(x => x.id === id);
+  if(!c) return;
+  if(!confirm('Excluir o cadastro de "' + c.nome + '"?\n\nEssa ação não pode ser desfeita.')) return;
+  clientes = clientes.filter(x => x.id !== id);
+  salvar();
+  render();
+  toast('Cadastro excluído.');
+}
+
+/* =========================================================
+   BACKUP / RESTAURAÇÃO
+   ========================================================= */
+function exportar(){
+  const dados = JSON.stringify(clientes, null, 2);
+  const blob = new Blob([dados], {type:'application/json'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  const d = new Date();
+  const stamp = d.getFullYear() + '-' +
+    String(d.getMonth()+1).padStart(2,'0') + '-' +
+    String(d.getDate()).padStart(2,'0');
+  a.href = url;
+  a.download = 'supermercados-backup-' + stamp + '.json';
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+  toast('Backup gerado!');
+}
+
+function importar(arquivo){
+  const leitor = new FileReader();
+  leitor.onload = e => {
+    try{
+      const dados = JSON.parse(e.target.result);
+      if(!Array.isArray(dados)) throw new Error('Formato inválido');
+      if(!confirm('Restaurar ' + dados.length + ' cadastro(s) do backup?\n\nOs cadastros atuais serão substituídos.')) return;
+
+      clientes = dados.map(c => ({
+        id: c.id || novoId(),
+        nome: c.nome || '',
+        bairro: c.bairro || '',
+        cidade: c.cidade || '',
+        endereco: c.endereco || '',
+        telefone: c.telefone || '',
+        contato: c.contato || '',
+        email: c.email || '',
+        obs: c.obs || ''
+      })).filter(c => c.nome);
+
+      salvar();
+      render();
+      toast('✅ Backup restaurado!');
+    }catch(err){
+      console.error(err);
+      toast('Arquivo inválido!', true);
+    }
+  };
+  leitor.readAsText(arquivo);
+}
+
+/* =========================================================
+   EVENTOS
+   ========================================================= */
+document.getElementById('btnNovo').addEventListener('click', abrirNovo);
+document.getElementById('btnFechar').addEventListener('click', fecharModal);
+document.getElementById('btnCancelar').addEventListener('click', fecharModal);
+document.getElementById('btnSalvar').addEventListener('click', salvarCliente);
+document.getElementById('btnExportar').addEventListener('click', exportar);
+document.getElementById('btnImportar').addEventListener('click', () => {
+  document.getElementById('fileImport').click();
+});
+document.getElementById('fileImport').addEventListener('change', e => {
+  if(e.target.files[0]) importar(e.target.files[0]);
+  e.target.value = '';
+});
+document.getElementById('busca').addEventListener('input', render);
+
+overlay.addEventListener('click', e => {
+  if(e.target === overlay) fecharModal();
+});
+
+document.addEventListener('keydown', e => {
+  if(e.key === 'Escape' && overlay.classList.contains('aberto')) fecharModal();
+  if(e.key === 'Enter' && overlay.classList.contains('aberto')){
+    if(document.activeElement.tagName !== 'TEXTAREA') salvarCliente();
   }
 });
+
+/* Máscara simples de telefone */
+document.getElementById('f-telefone').addEventListener('input', function(){
+  let v = soDigitos(this.value).slice(0, 11);
+  if(v.length > 10){
+    this.value = '(' + v.slice(0,2) + ') ' + v.slice(2,7) + '-' + v.slice(7);
+  }else if(v.length > 6){
+    this.value = '(' + v.slice(0,2) + ') ' + v.slice(2,6) + '-' + v.slice(6);
+  }else if(v.length > 2){
+    this.value = '(' + v.slice(0,2) + ') ' + v.slice(2);
+  }else if(v.length > 0){
+    this.value = '(' + v;
+  }else{
+    this.value = '';
+  }
+});
+
+/* =========================================================
+   INICIALIZAÇÃO
+   ========================================================= */
+carregar();
+render();
 </script>
 </body>
 </html>
